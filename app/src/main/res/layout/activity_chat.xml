@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:weightSum="2"
+    android:weightSum="7"
     android:orientation="vertical"
     tools:context="com.devteam.acceleration.ChatActivity">
 
@@ -17,23 +17,31 @@
         android:id="@+id/Chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="3"
         android:orientation="vertical">
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/Answers"
+        android:id="@+id/BottomPanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="1"
-        android:layout_alignParentBottom="true">
+        android:layout_weight="3"
+        android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select bot to ask"
+            android:layout_gravity="center"
+            android:textAlignment="center"/>
+
+        <View style="@style/Divider"/>
+        
         <fragment
+            android:layout_weight="4"
             android:name="com.devteam.acceleration.AnswersFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
 </LinearLayout>
