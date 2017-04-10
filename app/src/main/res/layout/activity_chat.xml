@@ -19,6 +19,12 @@
         android:layout_height="match_parent"
         android:layout_weight="3"
         android:orientation="vertical">
+
+        <fragment
+            android:name="com.devteam.acceleration.MessageFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
     </LinearLayout>
 
     <LinearLayout

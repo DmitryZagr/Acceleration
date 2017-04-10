@@ -6,7 +6,9 @@ import android.os.Bundle;
 
 import com.devteam.acceleration.dummy.DummyContent;
 
-public class ChatActivity extends AppCompatActivity implements AnswersFragment.OnListFragmentInteractionListener {
+public class ChatActivity extends AppCompatActivity
+        implements AnswersFragment.OnListFragmentInteractionListener,
+        MessageFragment.OnListFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
