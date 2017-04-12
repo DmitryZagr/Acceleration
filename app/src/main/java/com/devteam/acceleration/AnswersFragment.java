@@ -104,6 +104,6 @@ public class AnswersFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onAnswersFragmentInteraction(DummyItem item);
     }
 }

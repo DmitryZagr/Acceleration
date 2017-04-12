@@ -69,7 +69,7 @@ public class MessageFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyMessageRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyMessageRecyclerViewAdapter(MessageData.ITEMS, mListener));
         }
         return view;
     }
@@ -104,6 +104,6 @@ public class MessageFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onMessageFragmentInteraction(MessageData.MessageModel item);
     }
 }

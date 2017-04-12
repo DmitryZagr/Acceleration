@@ -1,6 +1,5 @@
 package com.devteam.acceleration;
 
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -17,7 +16,12 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onAnswersFragmentInteraction(DummyContent.DummyItem item) {
+
+    }
+
+    @Override
+    public void onMessageFragmentInteraction(MessageData.MessageModel item) {
 
     }
 }
