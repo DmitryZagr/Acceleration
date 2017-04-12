@@ -1,4 +1,4 @@
-package com.devteam.acceleration.dummy;
+package com.devteam.acceleration.ui.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

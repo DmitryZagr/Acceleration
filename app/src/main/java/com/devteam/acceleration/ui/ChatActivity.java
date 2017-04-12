@@ -1,9 +1,10 @@
-package com.devteam.acceleration;
+package com.devteam.acceleration.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.devteam.acceleration.dummy.DummyContent;
+import com.devteam.acceleration.R;
+import com.devteam.acceleration.ui.dummy.DummyContent;
 
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,

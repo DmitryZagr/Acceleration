@@ -1,4 +1,4 @@
-package com.devteam.acceleration;
+package com.devteam.acceleration.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -29,6 +29,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.devteam.acceleration.R;
+import com.devteam.acceleration.jabber.AccelerationJabberConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,8 +83,8 @@ public class LoginActivity extends AppCompatActivity {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
-                startActivity(intent);
+//                final Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
+//                startActivity(intent);
                 //Just passing login for now
                 attemptLogin();
             }
@@ -113,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -138,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+//            mAuthTask = new UserLoginTask(email, password);
             System.out.println("Execute started");
             mAuthTask.execute((Void) null);
         }
@@ -196,12 +199,17 @@ public class LoginActivity extends AppCompatActivity {
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+//        private final String mEmail;
+//        private final String mPassword;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        private AccelerationJabberConfig config;
+
+        UserLoginTask(AccelerationJabberConfig config) {
+//            mEmail = email;
+//            mPassword = password;
+
+            this.config = config;
+
         }
 
         @Override
@@ -215,13 +223,15 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
+
+
+//            for (String credential : DUMMY_CREDENTIALS) {
+//                String[] pieces = credential.split(":");
+//                if (pieces[0].equals(mEmail)) {
+//                    // Account exists, return true if the password matches.
+//                    return pieces[1].equals(mPassword);
+//                }
+//            }
 
             // TODO: register the new account here.
             return false;

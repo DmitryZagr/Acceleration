@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:weightSum="6"
     android:orientation="vertical"
-    tools:context="com.devteam.acceleration.ChatActivity">
+    tools:context="com.devteam.acceleration.ui.ChatActivity">
 
     <LinearLayout
         android:id="@+id/Chat"
@@ -19,7 +19,7 @@
         android:orientation="vertical">
 
         <fragment
-            android:name="com.devteam.acceleration.MessageFragment"
+            android:name="com.devteam.acceleration.ui.MessageFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
@@ -45,7 +45,7 @@
         android:orientation="vertical">
         
         <fragment
-            android:name="com.devteam.acceleration.AnswersFragment"
+            android:name="com.devteam.acceleration.ui.AnswersFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </LinearLayout>

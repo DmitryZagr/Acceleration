@@ -1,4 +1,4 @@
-package com.devteam.acceleration;
+package com.devteam.acceleration.ui;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

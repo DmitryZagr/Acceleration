@@ -1,4 +1,4 @@
-package com.devteam.acceleration;
+package com.devteam.acceleration.ui;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,14 +7,14 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.devteam.acceleration.MessageFragment.OnListFragmentInteractionListener;
-import com.devteam.acceleration.dummy.DummyContent.DummyItem;
+import com.devteam.acceleration.R;
+import com.devteam.acceleration.ui.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * specified {@link MessageFragment.OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessageRecyclerViewAdapter.ViewHolder> {
@@ -24,10 +24,10 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
             "часто используемый в печати и вэб-дизайне. Lorem Ipsum является " +
             "стандартной \"рыбой\" для текстов на латинице с начала XVI века.";
     private final List<MessageData.MessageModel> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final MessageFragment.OnListFragmentInteractionListener mListener;
 
     public MyMessageRecyclerViewAdapter(List<MessageData.MessageModel> items,
-                                        OnListFragmentInteractionListener listener) {
+                                        MessageFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
