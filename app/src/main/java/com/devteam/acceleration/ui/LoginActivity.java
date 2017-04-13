@@ -45,7 +45,6 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-//    private UserLoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView jabberIdView;
@@ -76,13 +75,8 @@ public class LoginActivity extends AppCompatActivity {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-//                final Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
-//                startActivity(intent);
                 //Just passing login for now
                 attemptLogin();
-
-//                final Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
-//                startActivity(intent);
             }
         });
 
@@ -96,9 +90,6 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-//        if (mAuthTask != null) {
-//            return;
-//        }
 
         // Reset errors.
         jabberIdView.setError(null);
@@ -112,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) && isPasswordValid(password)) {
             passwordView.setError(getString(R.string.error_invalid_password));
             focusView = passwordView;
             cancel = true;
@@ -137,9 +128,6 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-//            mAuthTask = new UserLoginTask(email, password);
-//            System.out.println("Execute started");
-//            mAuthTask.execute((Void) null);
             saveCredentialsAndLogin();
         }
     }
@@ -151,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return true;
     }
 
     /**
@@ -197,75 +185,10 @@ public class LoginActivity extends AppCompatActivity {
         prefs.edit()
                 .putString(AccelerationJabberParams.JABBER_ID, jabberIdView.getText().toString())
                 .putString(AccelerationJabberParams.USER_PASSWORD, passwordView.getText().toString())
-//                .putBoolean("xmpp_logged_in",false)
                 .commit();
 
         //Start the service
         Intent i1 = new Intent(this, AccelerationConnectionService.class);
         startService(i1);
     }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-  /*  public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-//        private final String mEmail;
-//        private final String mPassword;
-
-        private AccelerationJabberParams config;
-
-        UserLoginTask(AccelerationJabberParams config) {
-//            mEmail = email;
-//            mPassword = password;
-
-            this.config = config;
-
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-            System.out.println("Got in BG");
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-
-
-//            for (String credential : DUMMY_CREDENTIALS) {
-//                String[] pieces = credential.split(":");
-//                if (pieces[0].equals(mEmail)) {
-//                    // Account exists, return true if the password matches.
-//                    return pieces[1].equals(mPassword);
-//                }
-//            }
-
-            // TODO: register the new account here.
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-            System.out.println("Result " + success);
-            if (success) {
-                finish();
-            } else {
-                passwordView.setError(getString(R.string.error_incorrect_password));
-                passwordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    } */
 }
