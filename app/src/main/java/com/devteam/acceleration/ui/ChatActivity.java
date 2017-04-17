@@ -3,25 +3,18 @@ package com.devteam.acceleration.ui;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.os.StrictMode;
-import android.support.v4.view.AsyncLayoutInflater;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.devteam.acceleration.R;
 import com.devteam.acceleration.jabber.AccelerationConnectionService;
-import com.devteam.acceleration.jabber.AccelerationJabberConnection;
 
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,
@@ -79,7 +72,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        if(chatBroadcastReceiver != null) {
+        if (chatBroadcastReceiver != null) {
             unregisterReceiver(chatBroadcastReceiver);
         }
         super.onDestroy();
@@ -111,14 +104,10 @@ public class ChatActivity extends AppCompatActivity
 
 
         Intent intent = new Intent(AccelerationConnectionService.SEND_MESSAGE);
-        intent.putExtra(AccelerationConnectionService.MESSAGE_BODY,
-                item.toString());
-//        intent.putExtra(AccelerationConnectionService.BUNDLE_TO, contactJid);
+        intent.putExtra(AccelerationConnectionService.MESSAGE_BODY, item.toString());
         sendBroadcast(intent);
-//        sendBroadcast(intent);
 
         mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
-//         mMessages.addMessage(item.toString(), MessageData.OUTGOING_MESSAGE);
 
     }
 
@@ -133,17 +122,17 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-                if(action.equals(AccelerationConnectionService.NEW_MESSAGE)) {
+                if (action.equals(AccelerationConnectionService.NEW_MESSAGE)) {
                     String message = intent.getStringExtra(AccelerationConnectionService.MESSAGE_BODY);
-                    if(message == null)
+                    if (message == null)
                         message = "";
                     mMessages.addMessageAndUpdateList(message, MessageData.INCOMING_MESSAGE);
                 }
             }
         };
 
-            IntentFilter intentFilter = new IntentFilter(AccelerationConnectionService.NEW_MESSAGE);
-            registerReceiver(chatBroadcastReceiver, intentFilter);
+        IntentFilter intentFilter = new IntentFilter(AccelerationConnectionService.NEW_MESSAGE);
+        registerReceiver(chatBroadcastReceiver, intentFilter);
     }
 
 }
