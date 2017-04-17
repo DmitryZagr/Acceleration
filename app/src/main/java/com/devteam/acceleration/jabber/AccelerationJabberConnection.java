@@ -45,6 +45,8 @@ public class AccelerationJabberConnection implements ConnectionListener {
     private ChatMessageListener chatMessageListener;
     private BroadcastReceiver uiThreadMessageReceiver;
 
+    private final String BOOT_ID = "user@192.168.1.65";
+
     public static enum ConnectionState {
         CONNECTED, AUTHENTICATED, CONNECTING, DISCONNECTING, DISCONNECTED, ERROR;
     }
@@ -137,7 +139,7 @@ public class AccelerationJabberConnection implements ConnectionListener {
                 if (action.equals(AccelerationConnectionService.SEND_MESSAGE)) {
                     //Send the message.
                     sendMessage(intent.getStringExtra(AccelerationConnectionService.MESSAGE_BODY),
-                            /*intent.getStringExtra(AccelerationConnectionService.BUNDLE_TO)*/ "user@192.168.1.65");
+                            /*intent.getStringExtra(AccelerationConnectionService.BUNDLE_TO)*/ BOOT_ID);
                 }
             }
         };

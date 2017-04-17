@@ -56,10 +56,6 @@ public class AccelerationConnectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand()");
-
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(AccelerationConnectionService.SEND_MESSAGE);
-//        getApplicationContext().registerReceiver(serviceReceiver, intentFilter);
         start();
         return Service.START_STICKY;
     }

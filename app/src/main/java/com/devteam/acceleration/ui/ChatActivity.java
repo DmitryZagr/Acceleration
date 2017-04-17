@@ -1,9 +1,13 @@
 package com.devteam.acceleration.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.os.StrictMode;
+import android.support.v4.view.AsyncLayoutInflater;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,6 +21,7 @@ import android.widget.TextView;
 
 import com.devteam.acceleration.R;
 import com.devteam.acceleration.jabber.AccelerationConnectionService;
+import com.devteam.acceleration.jabber.AccelerationJabberConnection;
 
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,
@@ -39,6 +44,7 @@ public class ChatActivity extends AppCompatActivity
     private AnswersFragment mAnswers;
     private EditText requestField;
     private Button hideButton;
+    private BroadcastReceiver chatBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +73,18 @@ public class ChatActivity extends AppCompatActivity
                 manageBottomLayout();
             }
         });
+
+        initBroadcastReceiver();
     }
+
+    @Override
+    protected void onDestroy() {
+        if(chatBroadcastReceiver != null) {
+            unregisterReceiver(chatBroadcastReceiver);
+        }
+        super.onDestroy();
+    }
+
 
     private void manageBottomLayout() {
         if (customKeyboardState == CUSTOM_KEYBOARD_SHOWED) {
@@ -109,4 +126,24 @@ public class ChatActivity extends AppCompatActivity
     public void onMessageFragmentInteraction(MessageData.MessageModel item) {
 
     }
+
+    private void initBroadcastReceiver() {
+
+        chatBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if(action.equals(AccelerationConnectionService.NEW_MESSAGE)) {
+                    String message = intent.getStringExtra(AccelerationConnectionService.MESSAGE_BODY);
+                    if(message == null)
+                        message = "";
+                    mMessages.addMessageAndUpdateList(message, MessageData.INCOMING_MESSAGE);
+                }
+            }
+        };
+
+            IntentFilter intentFilter = new IntentFilter(AccelerationConnectionService.NEW_MESSAGE);
+            registerReceiver(chatBroadcastReceiver, intentFilter);
+    }
+
 }
