@@ -1,5 +1,6 @@
 package com.devteam.acceleration.ui;
 
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -9,6 +10,7 @@ import com.devteam.acceleration.ui.dummy.DummyContent;
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,
         MessageFragment.OnListFragmentInteractionListener {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
