@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -32,6 +33,14 @@ import com.devteam.acceleration.jabber.AccelerationJabberParams;
  */
 public class LoginActivity extends AppCompatActivity {
 
+    static {
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectActivityLeaks()
+                .penaltyLog()
+                .penaltyDeath()
+                .build()
+        );
+    }
 
     private static final String TAG = LoginActivity.class.getSimpleName();
 
@@ -76,7 +85,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Just passing login for now
-                attemptLogin();
+                final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
+                startActivity(test);
+//                attemptLogin();
             }
         });
 

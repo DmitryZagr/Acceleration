@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,9 @@ public class MessageFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
+    private MyMessageRecyclerViewAdapter MessagesAdapter;
+
+    private RecyclerView recyclerView;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -60,13 +64,14 @@ public class MessageFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyMessageRecyclerViewAdapter(MessageData.ITEMS, mListener));
+            MessagesAdapter = new MyMessageRecyclerViewAdapter(MessageData.ITEMS, mListener);
+            recyclerView.setAdapter(MessagesAdapter);
         }
         return view;
     }
@@ -87,6 +92,11 @@ public class MessageFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void updateData() {
+        MessagesAdapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(MessageData.COUNT - 1);
     }
 
     /**

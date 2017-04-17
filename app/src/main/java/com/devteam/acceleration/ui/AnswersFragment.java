@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.devteam.acceleration.R;
-import com.devteam.acceleration.ui.dummy.DummyContent;
-import com.devteam.acceleration.ui.dummy.DummyContent.DummyItem;
 
 /**
  * A fragment representing a list of Items.
@@ -27,6 +25,8 @@ public class AnswersFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private MyAnswersRecyclerViewAdapter AnswersAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,7 +68,8 @@ public class AnswersFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyAnswersRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            AnswersAdapter = new MyAnswersRecyclerViewAdapter(AnswersData.ITEMS, mListener);
+            recyclerView.setAdapter(AnswersAdapter);
         }
         return view;
     }
@@ -91,6 +92,10 @@ public class AnswersFragment extends Fragment {
         mListener = null;
     }
 
+    public void updateContent() {
+
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -103,6 +108,6 @@ public class AnswersFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onAnswersFragmentInteraction(DummyItem item);
+        void onAnswersFragmentInteraction(AnswersData.AnswerModel item);
     }
 }
