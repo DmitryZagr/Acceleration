@@ -86,9 +86,9 @@ public class LoginActivity extends AppCompatActivity {
                 {
                     //TODO login task
                     //Just passing login for now
-                    final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
-                    startActivity(test);
-//                  attemptLogin();
+//                    final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
+//                    startActivity(test);
+                    attemptLogin();
                 }
                 else
                 {

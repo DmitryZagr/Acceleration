@@ -7,10 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.devteam.acceleration.R;
 
@@ -44,6 +46,12 @@ public class ChatActivity extends AppCompatActivity
         mMessages = (MessageFragment) getSupportFragmentManager().findFragmentById(R.id.messages_fragment);
         mAnswers = (AnswersFragment) getSupportFragmentManager().findFragmentById(R.id.answers_fragment);
         requestField = (EditText) findViewById(R.id.request_field);
+        requestField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                System.out.println("Editing? - " + hasFocus);
+            }
+        });
         manageBottomLayout();
         hideButton = (Button) findViewById(R.id.action_hide);
         hideButton.setOnClickListener(new View.OnClickListener() {
