@@ -56,7 +56,7 @@ public class MyAnswersRecyclerViewAdapter extends RecyclerView.Adapter<MyAnswers
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-//        public final TextView mIdView;
+        //        public final TextView mIdView;
         public final Button mContentView;
         public AnswersData.AnswerModel mItem;
 

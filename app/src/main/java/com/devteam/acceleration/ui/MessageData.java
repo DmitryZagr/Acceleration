@@ -15,7 +15,7 @@ public class MessageData {
     public static final List<MessageModel> items = new ArrayList<MessageModel>();
     public static AtomicInteger count = new AtomicInteger(0);
 
-    private static final String[] messages= new String[]{
+    private static final String[] messages = new String[]{
             "Hello!", "How are you?", "Now we are going to talk about...Lorem Ipsum. Lorem Ipsum" +
             " - это текст-\"рыба\", \" \n" +
             "\"часто используемый в печати и вэб-дизайне. Lorem Ipsum является \" \n" +
@@ -39,8 +39,8 @@ public class MessageData {
     private static MessageModel createMessage(int position) {
         Random generator = new Random();
         return new MessageModel(String.valueOf(position),
-                                messages[generator.nextInt(messages.length)],
-                                generator.nextInt(2));
+                messages[generator.nextInt(messages.length)],
+                generator.nextInt(2));
     }
 
     public static class MessageModel {

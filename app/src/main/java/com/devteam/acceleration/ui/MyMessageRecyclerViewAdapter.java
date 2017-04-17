@@ -25,13 +25,10 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = null;
-        if (viewType == MessageData.INCOMING_MESSAGE)
-        {
+        if (viewType == MessageData.INCOMING_MESSAGE) {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.fragment_incoming_message, parent, false);
-        }
-        else if (viewType == MessageData.OUTGOING_MESSAGE)
-        {
+        } else if (viewType == MessageData.OUTGOING_MESSAGE) {
             view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.fragment_outgoing_message, parent, false);
         }
@@ -71,12 +68,13 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
         public final Integer distance;
         public final TextView mContentView;
         public MessageData.MessageModel mMessage;
+
         public ViewHolder(View view) {
             super(view);
             mView = view;
             id = 0;
             mContentView = (TextView) view.findViewById(R.id.content);
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)mContentView.getLayoutParams();
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mContentView.getLayoutParams();
             margin = params.leftMargin;
             distance = params.topMargin;
         }

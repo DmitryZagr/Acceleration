@@ -53,8 +53,7 @@ public class ChatActivity extends AppCompatActivity
             public void onClick(View view) {
                 if (customKeyboardState == CUSTOM_KEYBOARD_SHOWED) {
                     customKeyboardState = CUSTOM_KEYBOARD_HIDDEN;
-                }
-                else if (customKeyboardState == CUSTOM_KEYBOARD_HIDDEN) {
+                } else if (customKeyboardState == CUSTOM_KEYBOARD_HIDDEN) {
                     customKeyboardState = CUSTOM_KEYBOARD_SHOWED;
                 }
                 manageBottomLayout();
@@ -64,16 +63,15 @@ public class ChatActivity extends AppCompatActivity
 
     private void manageBottomLayout() {
         if (customKeyboardState == CUSTOM_KEYBOARD_SHOWED) {
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)mMessages.getView().getLayoutParams();
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mMessages.getView().getLayoutParams();
             params.weight = 6.0f;
             mMessages.getView().setLayoutParams(params);
             FragmentManager fm = getSupportFragmentManager();
             fm.beginTransaction()
                     .hide(mAnswers)
                     .commit();
-        }
-        else if (customKeyboardState == CUSTOM_KEYBOARD_HIDDEN) {
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)mMessages.getView().getLayoutParams();
+        } else if (customKeyboardState == CUSTOM_KEYBOARD_HIDDEN) {
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mMessages.getView().getLayoutParams();
             params.weight = 3.0f;
             mMessages.getView().setLayoutParams(params);
             FragmentManager fm = getSupportFragmentManager();
@@ -94,7 +92,7 @@ public class ChatActivity extends AppCompatActivity
         sendBroadcast(intent);
 //        sendBroadcast(intent);
 
-       mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
+        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
 //         mMessages.addMessage(item.toString(), MessageData.OUTGOING_MESSAGE);
 
     }

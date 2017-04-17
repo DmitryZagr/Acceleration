@@ -29,6 +29,7 @@ public class MessageFragment extends Fragment {
     private MyMessageRecyclerViewAdapter MessagesAdapter;
 
     private RecyclerView recyclerView;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).

@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private static final String TAG = LoginActivity.class.getSimpleName();
-    
+
     // UI references.
     private AutoCompleteTextView jabberIdView;
     private EditText passwordView;
@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
-//         jabberIdView = (AutoCompleteTextView) findViewById(R.id.jabber_account);
+        jabberIdView = (AutoCompleteTextView) findViewById(R.id.jabber_account);
 
         passwordView = (EditText) findViewById(R.id.password);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -83,16 +83,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (mEmailSignInButton.getText().equals(getResources().getString(R.string.action_sign_in)))
-                {
-                    //TODO login task
-                    //Just passing login for now
-                    final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
-                    startActivity(test);
-//                  attemptLogin();
-                }
-                else
-                {
+                if (mEmailSignInButton.getText().equals(getResources().getString(R.string.action_sign_in))) {
+                    attemptLogin();
+                } else {
                     //TODO registration task
                     System.out.println("Register");
                 }
