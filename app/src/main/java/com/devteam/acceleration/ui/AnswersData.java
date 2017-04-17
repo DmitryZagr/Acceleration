@@ -25,7 +25,7 @@ public class AnswersData {
 
     private static AtomicInteger count = new AtomicInteger(0);
 
-    private static final String[] messages= new String[]{
+    private static final String[] messages = new String[]{
             "Do something",
             "Send me picture",
             "Search web",
@@ -48,8 +48,8 @@ public class AnswersData {
     private static AnswerModel createMessage(int position) {
         Random generator = new Random();
         return new AnswerModel(String.valueOf(position),
-                                messages[generator.nextInt(messages.length)],
-                                generator.nextInt(2));
+                messages[generator.nextInt(messages.length)],
+                generator.nextInt(2));
     }
 
     public static class AnswerModel {
