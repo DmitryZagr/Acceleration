@@ -37,6 +37,8 @@
         android:orientation="horizontal">
 
         <EditText
+            android:maxLines="1"
+            android:imeOptions="actionGo"
             android:layout_weight="7"
             android:id="@+id/request_field"
             android:layout_height="wrap_content"
@@ -48,14 +50,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hide"
-            style="@style/Widget.AppCompat.ActionButton"/>
-
-        <Button
-            android:id="@+id/action_switch"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Switch"
             style="@style/Widget.AppCompat.ActionButton"/>
 
     </LinearLayout>
