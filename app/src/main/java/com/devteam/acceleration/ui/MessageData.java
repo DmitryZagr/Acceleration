@@ -44,14 +44,26 @@ public class MessageData {
     }
 
     public static class MessageModel {
-        public final String id;
-        public final String content;
-        public final int type;
+        private final String id;
+        private final String content;
+        private final int type;
 
         public MessageModel(String id, String content, int type) {
             this.id = id;
             this.content = content;
             this.type = type;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public int getType() {
+            return type;
         }
 
         @Override

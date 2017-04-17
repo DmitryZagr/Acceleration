@@ -40,13 +40,13 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
 
     @Override
     public int getItemViewType(int position) {
-        return mValues.get(position).type;
+        return mValues.get(position).getType();
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mMessage = mValues.get(position);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mContentView.setText(mValues.get(position).getContent());
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

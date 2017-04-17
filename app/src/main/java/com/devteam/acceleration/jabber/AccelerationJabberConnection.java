@@ -66,6 +66,9 @@ public class AccelerationJabberConnection implements ConnectionListener {
             username = params[0];
             serviceName = params[1];
         }
+
+        setupUiThreadBroadCastMessageReceiver();
+
     }
 
     public void connect() throws InterruptedException, IOException, SmackException, XMPPException {
@@ -82,8 +85,6 @@ public class AccelerationJabberConnection implements ConnectionListener {
         connection.addConnectionListener(this);
         connection.connect();
         connection.login();
-
-        setupUiThreadBroadCastMessageReceiver();
 
         chatMessageListener = new ChatMessageListener() {
             @Override
@@ -128,7 +129,7 @@ public class AccelerationJabberConnection implements ConnectionListener {
     }
 
     private void setupUiThreadBroadCastMessageReceiver() {
-        uiThreadMessageReceiver = new BroadcastReceiver() {
+            uiThreadMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //Check if the Intents purpose is to send the message.
@@ -136,28 +137,26 @@ public class AccelerationJabberConnection implements ConnectionListener {
                 if (action.equals(AccelerationConnectionService.SEND_MESSAGE)) {
                     //Send the message.
                     sendMessage(intent.getStringExtra(AccelerationConnectionService.MESSAGE_BODY),
-                            intent.getStringExtra(AccelerationConnectionService.BUNDLE_TO));
+                            /*intent.getStringExtra(AccelerationConnectionService.BUNDLE_TO)*/ "user@192.168.1.65");
                 }
             }
         };
 
-        IntentFilter filter = new IntentFilter();
+        IntentFilter filter = new IntentFilter(AccelerationConnectionService.SEND_MESSAGE);
         filter.addAction(AccelerationConnectionService.SEND_MESSAGE);
         applicationContext.registerReceiver(uiThreadMessageReceiver, filter);
 
     }
 
-    private void sendMessage(String body, String toJid) {
+    public void sendMessage(String body, String toJid) {
         Log.d(TAG, "Sending message to :" + toJid);
         try {
             Chat chat = ChatManager.getInstanceFor(connection)
                     .createChat((EntityJid) JidCreate.from(toJid), chatMessageListener);
             chat.sendMessage(body);
-        } catch (SmackException.NotConnectedException | XmppStringprepException  | InterruptedException e) {
+        } catch (SmackException.NotConnectedException | XmppStringprepException | InterruptedException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public void disconnect() {
@@ -168,6 +167,7 @@ public class AccelerationJabberConnection implements ConnectionListener {
         }
         connection = null;
     }
+
 
     @Override
     public void connected(XMPPConnection connection) {
@@ -211,5 +211,4 @@ public class AccelerationJabberConnection implements ConnectionListener {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         applicationContext.startActivity(intent);
     }
-
 }

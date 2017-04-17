@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        jabberIdView = (AutoCompleteTextView) findViewById(R.id.jabber_account);
+//         jabberIdView = (AutoCompleteTextView) findViewById(R.id.jabber_account);
 
         passwordView = (EditText) findViewById(R.id.password);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (mEmailSignInButton.getText().equals(getResources().getString(R.string.action_sign_in)))
                 {
                     //TODO login task
@@ -111,6 +112,12 @@ public class LoginActivity extends AppCompatActivity {
                 form.setVisibility(View.VISIBLE);
                 mEmailSignInButton.setText("Register and sign in!");
                 registration.setVisibility(View.INVISIBLE);
+
+                //Just passing login for now
+//                final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
+//                startActivity(test);
+//                 attemptLogin();
+
             }
         });
 
@@ -166,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startChatIfLogin() {
         showProgress(false);
-        if (AccelerationConnectionService.connectionState == AccelerationJabberConnection.ConnectionState.AUTHENTICATED) {
+        if (AccelerationConnectionService.connectionState.equals(AccelerationJabberConnection.ConnectionState.AUTHENTICATED)) {
             Intent intent = new Intent(this, ChatActivity.class);
             startActivity(intent);
         }

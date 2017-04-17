@@ -1,7 +1,10 @@
 package com.devteam.acceleration.jabber;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -51,14 +54,12 @@ public class AccelerationConnectionService extends Service {
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "onCreate()");
-    }
-
-    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand()");
+
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(AccelerationConnectionService.SEND_MESSAGE);
+//        getApplicationContext().registerReceiver(serviceReceiver, intentFilter);
         start();
         return Service.START_STICKY;
     }
