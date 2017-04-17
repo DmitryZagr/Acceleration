@@ -15,7 +15,15 @@ public class AnswersData {
 
     public static final List<AnswerModel> items = new ArrayList<AnswerModel>();
 
-    private static final AtomicInteger count = new AtomicInteger(0);
+    public static void countReset() {
+        AnswersData.count.set(0);
+    }
+
+    public static int getCount() {
+        return AnswersData.count.get();
+    }
+
+    private static AtomicInteger count = new AtomicInteger(0);
 
     private static final String[] messages = new String[]{
             "Do something",

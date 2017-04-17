@@ -93,7 +93,7 @@ public class MessageFragment extends Fragment {
         mListener = null;
     }
 
-    public void addMessage(String content, int type) {
+    public void addMessageAndUpdateList(String content, int type) {
         MessageData.addItem(new MessageData.MessageModel(
                 String.valueOf(MessageData.count),
                 content,

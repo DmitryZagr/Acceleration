@@ -27,6 +27,7 @@ public class AnswersFragment extends Fragment {
     private OnListFragmentInteractionListener mListener;
 
     private MyAnswersRecyclerViewAdapter AnswersAdapter;
+    private RecyclerView recyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -62,7 +63,7 @@ public class AnswersFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -92,8 +93,23 @@ public class AnswersFragment extends Fragment {
         mListener = null;
     }
 
-    public void updateContent() {
+    public void clearContent() {
+        AnswersData.items.clear();
+        AnswersData.countReset();
+    }
 
+    public void addAnswer(String content, int type) {
+        AnswersData.addItem(new AnswersData.AnswerModel(
+                String.valueOf(MessageData.count),
+                content,
+                type));
+        AnswersAdapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(MessageData.count.get() - 1);
+    }
+
+    public void updateContent() {
+        AnswersAdapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(1);
     }
 
     /**
