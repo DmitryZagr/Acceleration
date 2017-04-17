@@ -3,6 +3,7 @@ package com.devteam.acceleration.ui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by robert on 12.04.17.
@@ -12,26 +13,27 @@ public class AnswersData {
     public static final int BOT_BUTTON = 0;
     public static final int SYS_BUTTON = 1;
 
-    public static final List<AnswerModel> ITEMS = new ArrayList<AnswerModel>();
+    public static final List<AnswerModel> items = new ArrayList<AnswerModel>();
 
-    private static final int COUNT = 25;
+    private static final AtomicInteger count = new AtomicInteger(0);
 
     private static final String[] messages= new String[]{
-            "do something",
-            "send me picture",
-            "search web",
-            "go home"
+            "Do something",
+            "Send me picture",
+            "Search web",
+            "Go home"
     };
 
     static {
         // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
+        for (int i = 1; i <= 12; i++) {
             addItem(createMessage(i));
         }
     }
 
     public static void addItem(AnswerModel item) {
-        ITEMS.add(item);
+        items.add(item);
+        count.incrementAndGet();
 //        ITEM_MAP.put(item.id, item);
     }
 
@@ -55,7 +57,7 @@ public class AnswersData {
 
         @Override
         public String toString() {
-            return id + ") " + content;
+            return content;
         }
     }
 }

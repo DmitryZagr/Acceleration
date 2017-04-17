@@ -1,9 +1,9 @@
 package com.devteam.acceleration.ui;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by robert on 12.04.17.
@@ -12,28 +12,27 @@ import java.util.Random;
 public class MessageData {
     public static final int INCOMING_MESSAGE = 0;
     public static final int OUTGOING_MESSAGE = 1;
-
-    public static final List<MessageModel> ITEMS = new ArrayList<MessageModel>();
-
-    public static int COUNT = 25;
+    public static final List<MessageModel> items = new ArrayList<MessageModel>();
+    public static AtomicInteger count = new AtomicInteger(0);
 
     private static final String[] messages= new String[]{
             "Hello!", "How are you?", "Now we are going to talk about...Lorem Ipsum. Lorem Ipsum" +
-            " - это текст-\"рыба\", \" +\n" +
-            "\"часто используемый в печати и вэб-дизайне. Lorem Ipsum является \" +\n" +
+            " - это текст-\"рыба\", \" \n" +
+            "\"часто используемый в печати и вэб-дизайне. Lorem Ipsum является \" \n" +
             "\"стандартной \"рыбой\" для текстов на латинице с начала XVI века.",
             "Flushing caches. Disabling v-sync. SetSwapInterval() interval: 0 not set."
     };
 
     static {
         // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
+        for (int i = 1; i <= 3; i++) {
             addItem(createMessage(i));
         }
     }
 
     public static void addItem(MessageModel item) {
-        ITEMS.add(item);
+        items.add(item);
+        count.incrementAndGet();
 //        ITEM_MAP.put(item.id, item);
     }
 
