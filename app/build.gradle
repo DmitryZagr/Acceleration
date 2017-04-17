@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.devteam.acceleration"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -31,5 +31,8 @@ dependencies {
     compile 'com.android.support:percent:25.1.0'
     compile 'org.igniterealtime.smack:smack-tcp:4.2.0'
     compile 'org.igniterealtime.smack:smack-android:4.2.0'
+    compile group: 'org.igniterealtime.smack', name: 'smack-im', version: '4.2.0'
+    compile group: 'org.igniterealtime.smack', name: 'smack-core', version: '4.2.0'
+    compile group: 'org.igniterealtime.smack', name: 'smack-extensions', version: '4.2.0'
     testCompile 'junit:junit:4.12'
 }

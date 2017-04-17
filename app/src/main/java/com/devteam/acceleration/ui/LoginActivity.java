@@ -3,7 +3,10 @@ package com.devteam.acceleration.ui;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
@@ -23,9 +26,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.devteam.acceleration.R;
 import com.devteam.acceleration.jabber.AccelerationConnectionService;
+import com.devteam.acceleration.jabber.AccelerationJabberConnection;
 import com.devteam.acceleration.jabber.AccelerationJabberParams;
 
 /**
@@ -41,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build()
         );
     }
+
 
     private static final String TAG = LoginActivity.class.getSimpleName();
 
@@ -60,10 +66,14 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordView;
     private View progressView;
     private View loginFormView;
+    private BroadcastReceiver loginActivityReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initBroadcastReceicer();
+
         setContentView(R.layout.activity_login);
         // Set up the login form.
         jabberIdView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -93,7 +103,62 @@ public class LoginActivity extends AppCompatActivity {
 
         loginFormView = findViewById(R.id.login_form);
         progressView = findViewById(R.id.login_progress);
+
     }
+
+    private void initBroadcastReceicer() {
+        loginActivityReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action.equals(AccelerationConnectionService.CONNECTION_EVENT)) {
+                    showProgress(false);
+                    Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AccelerationConnectionService.CONNECTION_EVENT);
+        registerReceiver(loginActivityReceiver, filter);
+    }
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        startChatIfLogin();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        if (loginActivityReceiver != null) {
+            unregisterReceiver(loginActivityReceiver);
+            loginActivityReceiver = null;
+        }
+        super.onDestroy();
+    }
+
+
+    private void startChatIfLogin() {
+        showProgress(false);
+        if (AccelerationConnectionService.connectionState == AccelerationJabberConnection.ConnectionState.AUTHENTICATED) {
+            Intent intent = new Intent(this, ChatActivity.class);
+            startActivity(intent);
+        }
+    }
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -189,14 +254,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void saveCredentialsAndLogin()
-    {
-        Log.d(TAG,"saveCredentialsAndLogin() called.");
+    private void saveCredentialsAndLogin() {
+        Log.d(TAG, "saveCredentialsAndLogin() called.");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.edit()
                 .putString(AccelerationJabberParams.JABBER_ID, jabberIdView.getText().toString())
                 .putString(AccelerationJabberParams.USER_PASSWORD, passwordView.getText().toString())
-                .commit();
+                .apply();
 
         //Start the service
         Intent i1 = new Intent(this, AccelerationConnectionService.class);
