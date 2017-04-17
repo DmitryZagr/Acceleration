@@ -10,9 +10,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -49,18 +48,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private static final String TAG = LoginActivity.class.getSimpleName();
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-
+    
     // UI references.
     private AutoCompleteTextView jabberIdView;
     private EditText passwordView;
@@ -76,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        jabberIdView = (AutoCompleteTextView) findViewById(R.id.email);
+        jabberIdView = (AutoCompleteTextView) findViewById(R.id.jabber_account);
 
         passwordView = (EditText) findViewById(R.id.password);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -90,14 +78,39 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        final Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Just passing login for now
-                final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
-                startActivity(test);
-//                attemptLogin();
+                if (mEmailSignInButton.getText().equals(getResources().getString(R.string.action_sign_in)))
+                {
+                    //TODO login task
+                    //Just passing login for now
+                    final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
+                    startActivity(test);
+//                  attemptLogin();
+                }
+                else
+                {
+                    //TODO registration task
+                    System.out.println("Register");
+                }
+            }
+        });
+
+        final Button registration = (Button) findViewById(R.id.register_button);
+        registration.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText form;
+                form = (EditText) findViewById(R.id.email);
+                form.setVisibility(View.VISIBLE);
+                form = (EditText) findViewById(R.id.user_name);
+                form.setVisibility(View.VISIBLE);
+                form = (EditText) findViewById(R.id.email);
+                form.setVisibility(View.VISIBLE);
+                mEmailSignInButton.setText("Register and sign in!");
+                registration.setVisibility(View.INVISIBLE);
             }
         });
 

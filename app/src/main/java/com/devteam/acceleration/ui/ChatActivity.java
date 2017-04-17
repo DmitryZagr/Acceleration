@@ -30,7 +30,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void onAnswersFragmentInteraction(AnswersData.AnswerModel item) {
-        mMessages.addMessage(item.toString(), MessageData.OUTGOING_MESSAGE);
+        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
     }
 
     @Override
