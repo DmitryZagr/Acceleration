@@ -19,10 +19,11 @@ import java.util.List;
  */
 public class MyAnswersRecyclerViewAdapter extends RecyclerView.Adapter<MyAnswersRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<AnswersData.AnswerModel> mValues;
     private final AnswersFragment.OnListFragmentInteractionListener mListener;
 
-    public MyAnswersRecyclerViewAdapter(List<DummyItem> items, AnswersFragment.OnListFragmentInteractionListener listener) {
+    public MyAnswersRecyclerViewAdapter(List<AnswersData.AnswerModel> items,
+                                        AnswersFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -40,12 +41,14 @@ public class MyAnswersRecyclerViewAdapter extends RecyclerView.Adapter<MyAnswers
 //        holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
+        holder.mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("Check for listener");
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
+                    System.out.println("Added listener for" + holder.mItem.id);
                     mListener.onAnswersFragmentInteraction(holder.mItem);
                 }
             }
@@ -60,8 +63,8 @@ public class MyAnswersRecyclerViewAdapter extends RecyclerView.Adapter<MyAnswers
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
 //        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+        public final Button mContentView;
+        public AnswersData.AnswerModel mItem;
 
         public ViewHolder(View view) {
             super(view);

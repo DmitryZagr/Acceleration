@@ -15,7 +15,7 @@ public class MessageData {
 
     public static final List<MessageModel> ITEMS = new ArrayList<MessageModel>();
 
-    private static final int COUNT = 25;
+    public static int COUNT = 25;
 
     private static final String[] messages= new String[]{
             "Hello!", "How are you?", "Now we are going to talk about...Lorem Ipsum. Lorem Ipsum" +
