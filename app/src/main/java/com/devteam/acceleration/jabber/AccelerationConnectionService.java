@@ -8,8 +8,13 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.devteam.acceleration.ui.LoginActivity;
+
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+
+import static com.devteam.acceleration.jabber.AccelerationJabberConnection.ConnectionState;
+import static com.devteam.acceleration.jabber.AccelerationJabberConnection.LoggedInState;
 
 import java.io.IOException;
 
@@ -26,6 +31,17 @@ public class AccelerationConnectionService extends Service {
     //the background thread.
     private AccelerationJabberConnection connection;
 
+    public static final String UI_AUTHENTICATED = TAG + ".uiauthenticated";
+    public static final String SEND_MESSAGE = TAG + ".sendmessage";
+    public static final String MESSAGE_BODY = TAG + ".message_body";
+    public static final String BUNDLE_TO = TAG + ".b_to";
+
+    public static final String NEW_MESSAGE = TAG + ".newmessage";
+    public static final String BUNDLE_FROM_JID = TAG + ".b_from";
+    public static final String CONNECTION_EVENT = TAG + ".coonection.event";
+
+    public static ConnectionState connectionState = ConnectionState.DISCONNECTED;
+    public static LoggedInState loggedInState;
 
 
     @Nullable
@@ -45,17 +61,16 @@ public class AccelerationConnectionService extends Service {
         Log.d(TAG, "onStartCommand()");
         start();
         return Service.START_STICKY;
-        //RETURNING START_STICKY CAUSES OUR CODE TO STICK AROUND WHEN THE APP ACTIVITY HAS DIED.
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy()");
         super.onDestroy();
-//        stop();
+        stop();
     }
 
-    public void start() {
+    public synchronized void start() {
         Log.d(TAG, " Service Start() function called.");
         if (!active) {
             active = true;
@@ -76,6 +91,19 @@ public class AccelerationConnectionService extends Service {
         }
     }
 
+    public synchronized void stop() {
+        Log.d(TAG, "stop()");
+        active = false;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+        });
+    }
+
 
     private void initConnection() {
         Log.d(TAG, "initConnection()");
@@ -84,14 +112,13 @@ public class AccelerationConnectionService extends Service {
         }
         try {
             connection.connect();
-
         } catch (IOException | SmackException | XMPPException | InterruptedException e) {
             Log.d(TAG, "Something went wrong while connecting ,make sure the credentials are right and try again");
-            e.printStackTrace();
-            //Stop the service all together.
+            Intent intent = new Intent(CONNECTION_EVENT);
+//            intent.setPackage(LoginActivity.class.getPackage().getName());
+            getApplicationContext().sendBroadcast(intent);
             stopSelf();
         }
-
     }
 
 }
