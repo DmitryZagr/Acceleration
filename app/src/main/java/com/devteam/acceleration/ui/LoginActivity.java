@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
-//         jabberIdView = (AutoCompleteTextView) findViewById(R.id.jabber_account);
+        jabberIdView = (AutoCompleteTextView) findViewById(R.id.jabber_account);
 
         passwordView = (EditText) findViewById(R.id.password);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -87,9 +87,9 @@ public class LoginActivity extends AppCompatActivity {
                 {
                     //TODO login task
                     //Just passing login for now
-                    final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
-                    startActivity(test);
-//                  attemptLogin();
+//                    final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
+//                    startActivity(test);
+                    attemptLogin();
                 }
                 else
                 {
