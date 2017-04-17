@@ -13,10 +13,6 @@ import java.util.List;
 
 public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessageRecyclerViewAdapter.ViewHolder> {
 
-    private static final String LONG_MESSAGE =
-            "Lorem Ipsum - это текст-\"рыба\", " +
-            "часто используемый в печати и вэб-дизайне. Lorem Ipsum является " +
-            "стандартной \"рыбой\" для текстов на латинице с начала XVI века.";
     private final List<MessageData.MessageModel> mValues;
     private final MessageFragment.OnListFragmentInteractionListener mListener;
 
