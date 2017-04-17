@@ -95,9 +95,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Just passing login for now
-                final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
-                startActivity(test);
-//                attemptLogin();
+//                final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
+//                startActivity(test);
+                attemptLogin();
             }
         });
 
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startChatIfLogin() {
         showProgress(false);
-        if (AccelerationConnectionService.connectionState == AccelerationJabberConnection.ConnectionState.AUTHENTICATED) {
+        if (AccelerationConnectionService.connectionState.equals(AccelerationJabberConnection.ConnectionState.AUTHENTICATED)) {
             Intent intent = new Intent(this, ChatActivity.class);
             startActivity(intent);
         }
