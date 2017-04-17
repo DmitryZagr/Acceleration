@@ -68,7 +68,7 @@ public class AnswersFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            AnswersAdapter = new MyAnswersRecyclerViewAdapter(AnswersData.ITEMS, mListener);
+            AnswersAdapter = new MyAnswersRecyclerViewAdapter(AnswersData.items, mListener);
             recyclerView.setAdapter(AnswersAdapter);
         }
         return view;

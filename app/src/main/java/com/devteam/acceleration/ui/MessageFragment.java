@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +69,7 @@ public class MessageFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            MessagesAdapter = new MyMessageRecyclerViewAdapter(MessageData.ITEMS, mListener);
+            MessagesAdapter = new MyMessageRecyclerViewAdapter(MessageData.items, mListener);
             recyclerView.setAdapter(MessagesAdapter);
         }
         return view;
@@ -94,9 +93,13 @@ public class MessageFragment extends Fragment {
         mListener = null;
     }
 
-    public void updateData() {
+    public void addMessage(String content, int type) {
+        MessageData.addItem(new MessageData.MessageModel(
+                String.valueOf(MessageData.count),
+                content,
+                type));
         MessagesAdapter.notifyDataSetChanged();
-        recyclerView.scrollToPosition(MessageData.COUNT - 1);
+        recyclerView.scrollToPosition(MessageData.count.get() - 1);
     }
 
     /**
