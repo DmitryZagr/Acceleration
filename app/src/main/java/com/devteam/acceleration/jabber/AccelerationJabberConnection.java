@@ -4,8 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.devteam.acceleration.ui.ChatActivity;
 
@@ -32,6 +35,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 /**
  * Created by admin on 13.04.17.
@@ -186,9 +191,18 @@ public class AccelerationJabberConnection implements ConnectionListener {
     public void sendMessage(String body, String toJid) {
         Log.d(TAG, "Sending message to :" + toJid);
         try {
-            Chat chat = ChatManager.getInstanceFor(connection)
-                    .createChat((EntityJid) JidCreate.from(toJid), chatMessageListener);
-            chat.sendMessage(body);
+
+            ConnectivityManager cm = (ConnectivityManager) applicationContext
+                    .getSystemService(CONNECTIVITY_SERVICE);
+            NetworkInfo ni = cm.getActiveNetworkInfo();
+
+            if (ni != null && ni.isConnected()) {
+                Chat chat = ChatManager.getInstanceFor(connection)
+                        .createChat((EntityJid) JidCreate.from(toJid), chatMessageListener);
+                chat.sendMessage(body);
+            } else {
+                Toast.makeText(applicationContext, "No network", Toast.LENGTH_LONG).show();
+            }
         } catch (SmackException.NotConnectedException | XmppStringprepException | InterruptedException e) {
             e.printStackTrace();
         }
