@@ -311,7 +311,7 @@ public class LoginActivity extends AppCompatActivity {
 
         prefs.edit()
                 .putString(AccelerationJabberParams.JABBER_ID, jabberIdView.getText().toString())
-                .putString(AccelerationJabberParams.USER_PASSWORD, passwordView.getText().toString())
+                .putString(AccelerationJabberParams.USER_PASSWORD, password)
                 .putBoolean(AccelerationJabberParams.isRegistration, isRegistration).apply();
 
 

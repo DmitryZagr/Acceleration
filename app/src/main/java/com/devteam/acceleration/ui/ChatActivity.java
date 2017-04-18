@@ -41,6 +41,8 @@ public class ChatActivity extends AppCompatActivity
     private EditText requestField;
     private Button hideButton;
     private BroadcastReceiver chatBroadcastReceiver;
+    //TODO : c этим надо чет сделать
+    //
     public static final String bot = "user@192.168.1.65";
 
     @Override
