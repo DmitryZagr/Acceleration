@@ -44,9 +44,6 @@ public class AccelerationJabberConnection implements ConnectionListener {
     private XMPPTCPConnection connection;
     private Context applicationContext;
     private JabberModel jabberModel = new JabberModel();
-    //    private String username = "";
-//    private String password = "";
-//    private String serviceName = "";
     private ChatMessageListener chatMessageListener;
     private BroadcastReceiver uiThreadMessageReceiver;
 
@@ -85,22 +82,13 @@ public class AccelerationJabberConnection implements ConnectionListener {
     }
 
     public void createAccount() throws IOException, InterruptedException, XMPPException, SmackException {
-        Log.d(TAG, "Connecting to server " + jabberModel.getServiceName());
-        XMPPTCPConnectionConfiguration.Builder builder =
-                XMPPTCPConnectionConfiguration.builder();
-        builder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-        builder.setUsernameAndPassword(jabberModel.getJabberId(), jabberModel.getPassword());
-        builder.setHostAddress(InetAddress.getByName(jabberModel.getServiceName()));
-        builder.setXmppDomain(JidCreate.from(jabberModel.getServiceName()).asDomainBareJid());
-        builder.setConnectTimeout(3000);
-        builder.addEnabledSaslMechanism("PLAIN");
 
-        connection = new XMPPTCPConnection(builder.build());
-        connection.addConnectionListener(this);
-
-        connection.connect();
+        if (connection == null || !connection.isConnected()) {
+            connect();
+        }
 
         AccountManager accountManager = AccountManager.getInstance(connection);
+        accountManager.sensitiveOperationOverInsecureConnection(true);
         Map<String, String> atr = new HashMap<>();
         atr.put(AccelerationJabberParams.USER_EMAIL, jabberModel.getEmail());
         atr.put(AccelerationJabberParams.USER_NAME, jabberModel.getName());
@@ -109,7 +97,7 @@ public class AccelerationJabberConnection implements ConnectionListener {
         loginToChat();
     }
 
-    public void connect() throws InterruptedException, IOException, SmackException, XMPPException {
+    private void connect() throws InterruptedException, IOException, SmackException, XMPPException {
         Log.d(TAG, "Connecting to server " + jabberModel.getServiceName());
         XMPPTCPConnectionConfiguration.Builder builder =
                 XMPPTCPConnectionConfiguration.builder();
@@ -122,13 +110,13 @@ public class AccelerationJabberConnection implements ConnectionListener {
         connection = new XMPPTCPConnection(builder.build());
         connection.addConnectionListener(this);
         connection.connect();
-
-        loginToChat();
     }
 
-    private void loginToChat() throws InterruptedException, IOException, SmackException, XMPPException {
+    public void loginToChat() throws InterruptedException, IOException, SmackException, XMPPException {
 
-//        connect();
+        if (connection == null || !connection.isConnected()) {
+            connect();
+        }
 
         connection.login();
 

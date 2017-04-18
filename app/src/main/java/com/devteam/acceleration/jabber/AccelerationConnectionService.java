@@ -105,7 +105,7 @@ public class AccelerationConnectionService extends Service {
             if(connection.isNewAccount()) {
                 connection.createAccount();
             } else {
-                connection.connect();
+                connection.loginToChat();
             }
         } catch (IOException | SmackException | XMPPException | InterruptedException e) {
             Log.d(TAG, "Something went wrong while connecting ,make sure the credentials are right and try again");
