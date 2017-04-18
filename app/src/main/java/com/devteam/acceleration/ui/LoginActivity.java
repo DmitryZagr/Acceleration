@@ -49,7 +49,6 @@ public class LoginActivity extends AppCompatActivity {
         );
     }
 
-
     private static final String TAG = LoginActivity.class.getSimpleName();
 
     // UI references.
@@ -74,47 +73,60 @@ public class LoginActivity extends AppCompatActivity {
         userNameView = (EditText) findViewById(R.id.user_name);
 
         passwordView = (EditText) findViewById(R.id.password);
-        passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
 
         final Button mEmailSignInButton = (Button) findViewById(R.id.sign_in_button);
+        final EditText form = (EditText) findViewById(R.id.email);
+        final Button cancel = (Button) findViewById(R.id.back_to_sign_in_button);
+        final Button registration = (Button) findViewById(R.id.register_button);
+        final Button registerSignIn = (Button) findViewById(R.id.register_sign_in_button);
+
+        //Sign in
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (mEmailSignInButton.getText().equals(getResources().getString(R.string.action_sign_in))) {
-                    attemptLogin();
-                } else {
-                    registration();
-                }
+                attemptLogin();
             }
         });
 
-        final Button registration = (Button) findViewById(R.id.register_button);
+        //Show all for registration
         registration.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText form;
                 emailView.setVisibility(View.VISIBLE);
                 userNameView.setVisibility(View.VISIBLE);
-                form = (EditText) findViewById(R.id.email);
                 form.setVisibility(View.VISIBLE);
-                mEmailSignInButton.setText("Register and sign in!");
-                registration.setVisibility(View.INVISIBLE);
+
+                mEmailSignInButton.setVisibility(View.GONE);
+                registration.setVisibility(View.GONE);
+                cancel.setVisibility(View.VISIBLE);
+                registerSignIn.setVisibility(View.VISIBLE);
             }
         });
 
+        //Registration
+        registerSignIn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                registration();
+            }
+        });
+
+        //Back to Sign In
+        cancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                emailView.setVisibility(View.GONE);
+                userNameView.setVisibility(View.GONE);
+                form.setVisibility(View.GONE);
+
+                mEmailSignInButton.setVisibility(View.VISIBLE);
+                registration.setVisibility(View.VISIBLE);
+                cancel.setVisibility(View.GONE);
+                registerSignIn.setVisibility(View.GONE);
+            }
+        });
         loginFormView = findViewById(R.id.login_form);
         progressView = findViewById(R.id.login_progress);
-
     }
 
     private void initBroadcastReceicer() {
