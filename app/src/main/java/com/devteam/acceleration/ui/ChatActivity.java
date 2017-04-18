@@ -38,6 +38,7 @@ public class ChatActivity extends AppCompatActivity
     private EditText requestField;
     private Button hideButton;
     private BroadcastReceiver chatBroadcastReceiver;
+    public static final String bot = "user@192.168.1.65";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +106,7 @@ public class ChatActivity extends AppCompatActivity
 
         Intent intent = new Intent(AccelerationConnectionService.SEND_MESSAGE);
         intent.putExtra(AccelerationConnectionService.MESSAGE_BODY, item.toString());
+        intent.putExtra(AccelerationConnectionService.BUNDLE_TO, bot);
         sendBroadcast(intent);
 
         mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);

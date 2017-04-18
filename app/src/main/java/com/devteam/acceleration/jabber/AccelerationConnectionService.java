@@ -59,8 +59,8 @@ public class AccelerationConnectionService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy()");
-        super.onDestroy();
         stop();
+        super.onDestroy();
     }
 
     public synchronized void start() {
@@ -71,7 +71,6 @@ public class AccelerationConnectionService extends Service {
                 thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
-
                         Looper.prepare();
                         handler = new Handler();
                         initConnection();
@@ -97,18 +96,20 @@ public class AccelerationConnectionService extends Service {
         });
     }
 
-
     private void initConnection() {
         Log.d(TAG, "initConnection()");
         if (connection == null) {
             connection = new AccelerationJabberConnection(this);
         }
         try {
-            connection.connect();
+            if(connection.isNewAccount()) {
+                connection.createAccount();
+            } else {
+                connection.connect();
+            }
         } catch (IOException | SmackException | XMPPException | InterruptedException e) {
             Log.d(TAG, "Something went wrong while connecting ,make sure the credentials are right and try again");
             Intent intent = new Intent(CONNECTION_EVENT);
-//            intent.setPackage(LoginActivity.class.getPackage().getName());
             getApplicationContext().sendBroadcast(intent);
             stopSelf();
         }

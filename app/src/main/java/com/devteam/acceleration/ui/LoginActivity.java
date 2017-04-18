@@ -31,8 +31,12 @@ import com.devteam.acceleration.jabber.AccelerationConnectionService;
 import com.devteam.acceleration.jabber.AccelerationJabberConnection;
 import com.devteam.acceleration.jabber.AccelerationJabberParams;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+
+
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via emailView/password.
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -51,6 +55,8 @@ public class LoginActivity extends AppCompatActivity {
     // UI references.
     private AutoCompleteTextView jabberIdView;
     private EditText passwordView;
+    private EditText emailView;
+    private EditText userNameView;
     private View progressView;
     private View loginFormView;
     private BroadcastReceiver loginActivityReceiver;
@@ -64,6 +70,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         // Set up the login form.
         jabberIdView = (AutoCompleteTextView) findViewById(R.id.jabber_account);
+        emailView = (EditText) findViewById(R.id.email);
+        userNameView = (EditText) findViewById(R.id.user_name);
 
         passwordView = (EditText) findViewById(R.id.password);
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -85,8 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (mEmailSignInButton.getText().equals(getResources().getString(R.string.action_sign_in))) {
                     attemptLogin();
                 } else {
-                    //TODO registration task
-                    System.out.println("Register");
+                    registration();
                 }
             }
         });
@@ -96,20 +103,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText form;
-                form = (EditText) findViewById(R.id.email);
-                form.setVisibility(View.VISIBLE);
-                form = (EditText) findViewById(R.id.user_name);
-                form.setVisibility(View.VISIBLE);
+                emailView.setVisibility(View.VISIBLE);
+                userNameView.setVisibility(View.VISIBLE);
                 form = (EditText) findViewById(R.id.email);
                 form.setVisibility(View.VISIBLE);
                 mEmailSignInButton.setText("Register and sign in!");
                 registration.setVisibility(View.INVISIBLE);
-
-                //Just passing login for now
-//                final Intent test = new Intent(LoginActivity.this, ChatActivity.class);
-//                startActivity(test);
-//                 attemptLogin();
-
             }
         });
 
@@ -171,10 +170,47 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void registration() {
+        jabberIdView.setError(null);
+        passwordView.setError(null);
+        emailView.setError(null);
+        userNameView.setError(null);
+
+        boolean cancel = false;
+
+        String jabberId = jabberIdView.getText().toString();
+        String password = passwordView.getText().toString();
+        String email = emailView.getText().toString();
+        String username = userNameView.getText().toString();
+
+        if (TextUtils.isEmpty(jabberId) || !isEmailValid(jabberId)) {
+            cancel = true;
+            jabberIdView.setError("Not valid");
+        }
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+            cancel = true;
+            passwordView.setError("Not valid");
+        }
+        if (TextUtils.isEmpty(email) || !isEmailValid(email)) {
+            cancel = true;
+            emailView.setError("Not valid");
+        }
+        if (TextUtils.isEmpty(username)) {
+            cancel = true;
+            userNameView.setError("Not valid");
+        }
+
+        if (!cancel) {
+            showProgress(true);
+            saveCredentials(true);
+        }
+
+    }
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
+     * If there are form errors (invalid emailView, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
@@ -197,7 +233,7 @@ public class LoginActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        // Check for a valid email address.
+        // Check for a valid emailView address.
         if (TextUtils.isEmpty(email)) {
             jabberIdView.setError(getString(R.string.error_field_required));
             focusView = jabberIdView;
@@ -216,7 +252,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            saveCredentialsAndLogin();
+            saveCredentials(false);
         }
     }
 
@@ -227,7 +263,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return true;
+        if (password.length() >= 1)
+            return true;
+        return false;
     }
 
     /**
@@ -266,13 +304,21 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void saveCredentialsAndLogin() {
-        Log.d(TAG, "saveCredentialsAndLogin() called.");
+    private void saveCredentials(boolean isRegistration) {
+        Log.d(TAG, "saveCredentials() called.");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String password = new String(Hex.encodeHex(DigestUtils.sha(passwordView.getText().toString())));
+
         prefs.edit()
                 .putString(AccelerationJabberParams.JABBER_ID, jabberIdView.getText().toString())
                 .putString(AccelerationJabberParams.USER_PASSWORD, passwordView.getText().toString())
-                .apply();
+                .putBoolean(AccelerationJabberParams.isRegistration, isRegistration).apply();
+
+
+        if (isRegistration) {
+            prefs.edit().putString(AccelerationJabberParams.USER_NAME, userNameView.getText().toString())
+                    .putString(AccelerationJabberParams.USER_EMAIL, emailView.getText().toString()).apply();
+        }
 
         //Start the service
         Intent i1 = new Intent(this, AccelerationConnectionService.class);

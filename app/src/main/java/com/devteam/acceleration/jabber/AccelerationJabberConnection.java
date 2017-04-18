@@ -22,12 +22,16 @@ import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jxmpp.jid.EntityJid;
 import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Localpart;
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by admin on 13.04.17.
@@ -39,15 +43,16 @@ public class AccelerationJabberConnection implements ConnectionListener {
 
     private XMPPTCPConnection connection;
     private Context applicationContext;
-    private String username = "";
-    private String password = "";
-    private String serviceName = "";
+    private JabberModel jabberModel = new JabberModel();
+    //    private String username = "";
+//    private String password = "";
+//    private String serviceName = "";
     private ChatMessageListener chatMessageListener;
     private BroadcastReceiver uiThreadMessageReceiver;
 
-    private final String BOOT_ID = "user@192.168.1.65";
+    private boolean isNewAccount = false;
 
-    public  enum ConnectionState {
+    public enum ConnectionState {
         CONNECTED, AUTHENTICATED, CONNECTING, DISCONNECTING, DISCONNECTED, ERROR;
     }
 
@@ -60,32 +65,71 @@ public class AccelerationJabberConnection implements ConnectionListener {
         applicationContext = context.getApplicationContext();
         String jid = PreferenceManager.getDefaultSharedPreferences(applicationContext)
                 .getString(AccelerationJabberParams.JABBER_ID, null);
-        password = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                .getString(AccelerationJabberParams.USER_PASSWORD, null);
+        jabberModel.setPassword(PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getString(AccelerationJabberParams.USER_PASSWORD, null));
+        jabberModel.setName(PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getString(AccelerationJabberParams.USER_NAME, null));
+        jabberModel.setEmail(PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getString(AccelerationJabberParams.USER_EMAIL, null));
+        isNewAccount = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                .getBoolean(AccelerationJabberParams.isRegistration, false);
 
         if (jid != null) {
             String[] params = jid.split("@");
-            username = params[0];
-            serviceName = params[1];
+            jabberModel.setJabberId(params[0]);
+            jabberModel.setServiceName(params[1]);
         }
 
         setupUiThreadBroadCastMessageReceiver();
 
     }
 
-    public void connect() throws InterruptedException, IOException, SmackException, XMPPException {
-        Log.d(TAG, "Connecting to server " + serviceName);
+    public void createAccount() throws IOException, InterruptedException, XMPPException, SmackException {
+        Log.d(TAG, "Connecting to server " + jabberModel.getServiceName());
         XMPPTCPConnectionConfiguration.Builder builder =
                 XMPPTCPConnectionConfiguration.builder();
         builder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
-        builder.setUsernameAndPassword(username, password);
-        builder.setHostAddress(InetAddress.getByName(serviceName));
-        builder.setXmppDomain(JidCreate.from(serviceName).asDomainBareJid());
-        builder.setConnectTimeout(1000);
+        builder.setUsernameAndPassword(jabberModel.getJabberId(), jabberModel.getPassword());
+        builder.setHostAddress(InetAddress.getByName(jabberModel.getServiceName()));
+        builder.setXmppDomain(JidCreate.from(jabberModel.getServiceName()).asDomainBareJid());
+        builder.setConnectTimeout(3000);
+        builder.addEnabledSaslMechanism("PLAIN");
+
+        connection = new XMPPTCPConnection(builder.build());
+        connection.addConnectionListener(this);
+
+        connection.connect();
+
+        AccountManager accountManager = AccountManager.getInstance(connection);
+        Map<String, String> atr = new HashMap<>();
+        atr.put(AccelerationJabberParams.USER_EMAIL, jabberModel.getEmail());
+        atr.put(AccelerationJabberParams.USER_NAME, jabberModel.getName());
+        accountManager.createAccount(Localpart.from(jabberModel.getJabberId()), jabberModel.getPassword(), atr);
+
+        loginToChat();
+    }
+
+    public void connect() throws InterruptedException, IOException, SmackException, XMPPException {
+        Log.d(TAG, "Connecting to server " + jabberModel.getServiceName());
+        XMPPTCPConnectionConfiguration.Builder builder =
+                XMPPTCPConnectionConfiguration.builder();
+        builder.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
+        builder.setUsernameAndPassword(jabberModel.getJabberId(), jabberModel.getPassword());
+        builder.setHostAddress(InetAddress.getByName(jabberModel.getServiceName()));
+        builder.setXmppDomain(JidCreate.from(jabberModel.getServiceName()).asDomainBareJid());
+        builder.setConnectTimeout(3000);
 
         connection = new XMPPTCPConnection(builder.build());
         connection.addConnectionListener(this);
         connection.connect();
+
+        loginToChat();
+    }
+
+    private void loginToChat() throws InterruptedException, IOException, SmackException, XMPPException {
+
+//        connect();
+
         connection.login();
 
         chatMessageListener = new ChatMessageListener() {
@@ -130,8 +174,9 @@ public class AccelerationJabberConnection implements ConnectionListener {
         reconnectionManager.enableAutomaticReconnection();
     }
 
+
     private void setupUiThreadBroadCastMessageReceiver() {
-            uiThreadMessageReceiver = new BroadcastReceiver() {
+        uiThreadMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //Check if the Intents purpose is to send the message.
@@ -139,7 +184,7 @@ public class AccelerationJabberConnection implements ConnectionListener {
                 if (action.equals(AccelerationConnectionService.SEND_MESSAGE)) {
                     //Send the message.
                     sendMessage(intent.getStringExtra(AccelerationConnectionService.MESSAGE_BODY),
-                            intent.getStringExtra(AccelerationConnectionService.BUNDLE_TO /* BOOT_ID*/));
+                            intent.getStringExtra(AccelerationConnectionService.BUNDLE_TO));
                 }
             }
         };
@@ -162,7 +207,7 @@ public class AccelerationJabberConnection implements ConnectionListener {
     }
 
     public void disconnect() {
-        Log.d(TAG, "Disconnecting from server " + serviceName);
+        Log.d(TAG, "Disconnecting from server " + jabberModel.getServiceName());
 
         if (connection != null && connection.isConnected()) {
             connection.disconnect();
@@ -213,4 +258,9 @@ public class AccelerationJabberConnection implements ConnectionListener {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         applicationContext.startActivity(intent);
     }
+
+    public boolean isNewAccount() {
+        return isNewAccount;
+    }
+
 }
