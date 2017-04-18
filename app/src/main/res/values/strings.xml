@@ -20,4 +20,6 @@
     <string name="prompt_jabber">Jabber name</string>
     <string name="prompt_username">Username</string>
     <string name="action_register">Register</string>
+    <string name="action_register_and_sign_in">Register and sign in!</string>
+    <string name="cancel">Cancel</string>
 </resources>
