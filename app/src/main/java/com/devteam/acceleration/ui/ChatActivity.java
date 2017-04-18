@@ -43,7 +43,7 @@ public class ChatActivity extends AppCompatActivity
     private BroadcastReceiver chatBroadcastReceiver;
     //TODO : c этим надо чет сделать
     //
-    public static final String bot = "user@192.168.1.65";
+    public static final String bot = "user@192.168.43.98";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +140,8 @@ public class ChatActivity extends AppCompatActivity
                     String message = intent.getStringExtra(AccelerationConnectionService.MESSAGE_BODY);
                     if (message == null)
                         message = "";
-                    mMessages.addMessageAndUpdateList(message, MessageData.INCOMING_MESSAGE);
+                    String from = intent.getStringExtra(AccelerationConnectionService.BUNDLE_FROM_JID);
+                    mMessages.addMessageAndUpdateList(from + ":\n" + message, MessageData.INCOMING_MESSAGE);
                 }
             }
         };
