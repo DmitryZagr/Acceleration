@@ -7,12 +7,12 @@
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:weightSum="6"
+    android:weightSum="100"
     android:orientation="vertical"
     tools:context="com.devteam.acceleration.ui.ChatActivity">
 
     <fragment
-        android:layout_weight="3"
+        android:layout_weight="50"
         android:id="@+id/messages_fragment"
         android:name="com.devteam.acceleration.ui.MessageFragment"
         android:layout_width="match_parent"
@@ -30,32 +30,36 @@
 
     <View style="@style/Divider"/>
 
-    <LinearLayout
-        android:weightSum="7"
+
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <Button
+            android:id="@+id/action_hide"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="4dp"
+            android:background="@drawable/send_button"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"/>
+
+        <!--android:background="@android:drawable/ic_menu_send"-->
+
         <EditText
             android:maxLines="1"
             android:imeOptions="actionGo"
-            android:layout_weight="7"
             android:id="@+id/request_field"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"/>
+            android:layout_width="match_parent"
+            android:layout_toLeftOf="@+id/action_hide"/>
 
-        <Button
-            android:id="@+id/action_hide"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hide"
-            style="@style/Widget.AppCompat.ActionButton"/>
+    </RelativeLayout>
 
-    </LinearLayout>
-        
     <fragment
-        android:layout_weight="3"
+        android:layout_weight="50"
         android:id="@+id/answers_fragment"
         android:name="com.devteam.acceleration.ui.AnswersFragment"
         android:layout_width="match_parent"

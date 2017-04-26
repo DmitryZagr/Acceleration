@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+    <!--<item android:state_pressed="true"-->
+        <!--android:drawable="@drawable/imagewhenpressed" /> &lt;!&ndash; pressed &ndash;&gt;-->
+    <!--<item android:state_focused="true"-->
+        <!--android:drawable="@drawable/imagewhenfocused" /> &lt;!&ndash; focused &ndash;&gt;-->
+    <!--<item android:drawable="@drawable/defaultimage" /> &lt;!&ndash; default &ndash;&gt;-->
+<!--</selector>`-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android"
+            android:shape="oval">
+
+            <!--<corners android:radius="8dp"/>-->
+            <solid android:color="@color/colorPrimaryDark"/>
+            <padding
+                android:bottom="8dp"
+                android:left="8dp"
+                android:right="8dp"
+                android:top="8dp"/>
+        </shape>
+    </item>
+    <item>
+        <bitmap android:src="@mipmap/ic_send_black_24dp" android:tint="@color/colorAccent" />
+    </item>
+</layer-list>
+
+<!--<bitmap android:src="@mipmap/ic_send_black_24dp" android:tint="@color/colorAccent" />-->
+    <!--android:icon="@mipmap/ic_send_black_24dp"-->
