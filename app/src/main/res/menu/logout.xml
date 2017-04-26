@@ -4,8 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_logout"
-        android:icon="@mipmap/ic_exit_to_app_black_24dp"
+        android:icon="@drawable/logout_button"
         android:orderInCategory="100"
         app:showAsAction="always"
-        android:title="Test" />
+        android:title="Test">>
+    </item>
 </menu>

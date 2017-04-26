@@ -6,12 +6,11 @@
         <!--android:drawable="@drawable/imagewhenfocused" /> &lt;!&ndash; focused &ndash;&gt;-->
     <!--<item android:drawable="@drawable/defaultimage" /> &lt;!&ndash; default &ndash;&gt;-->
 <!--</selector>`-->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="oval">
 
-            <!--<corners android:radius="8dp"/>-->
             <solid android:color="@color/colorPrimaryDark"/>
             <padding
                 android:bottom="8dp"
@@ -21,9 +20,6 @@
         </shape>
     </item>
     <item>
-        <bitmap android:src="@mipmap/ic_send_black_24dp" android:tint="@color/colorAccent" />
+        <bitmap android:src="@mipmap/ic_send_black_24dp" android:tint="@color/colorActive" />
     </item>
 </layer-list>
-
-<!--<bitmap android:src="@mipmap/ic_send_black_24dp" android:tint="@color/colorAccent" />-->
-    <!--android:icon="@mipmap/ic_send_black_24dp"-->

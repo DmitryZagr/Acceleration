@@ -6,4 +6,5 @@
     <!--<color name="colorAccent">#C5E1A5</color>-->
     <color name="colorMessageIncoming">#9CCC65</color>
     <color name="colorMessageOutgoing">#C5E1A5</color>
+    <color name="colorActive">#FFFFFF</color>
 </resources>
