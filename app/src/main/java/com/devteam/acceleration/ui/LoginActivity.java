@@ -84,7 +84,9 @@ public class LoginActivity extends AppCompatActivity {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO comment this intent and uncomment attemptLogin();
                 final Intent sw = new Intent(LoginActivity.this, ChatActivity.class);
+                sw.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(sw);
 //                attemptLogin();
             }

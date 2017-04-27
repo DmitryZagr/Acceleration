@@ -64,8 +64,8 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public Integer id;
-        public final Integer margin;
-        public final Integer distance;
+//        public final Integer margin;
+//        public final Integer distance;
         public final TextView mContentView;
         public MessageData.MessageModel mMessage;
 
@@ -74,9 +74,9 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
             mView = view;
             id = 0;
             mContentView = (TextView) view.findViewById(R.id.content);
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mContentView.getLayoutParams();
-            margin = params.leftMargin;
-            distance = params.topMargin;
+//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mContentView.getLayoutParams();
+//            margin = params.leftMargin;
+//            distance = params.topMargin;
         }
 
         @Override

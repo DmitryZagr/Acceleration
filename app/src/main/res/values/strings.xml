@@ -22,4 +22,10 @@
     <string name="action_register">Register</string>
     <string name="action_register_and_sign_in">Register and sign in!</string>
     <string name="cancel">Cancel</string>
+    <string name="dialog_message">Do you really want to log out?</string>
+    <string name="dialog_title">Logout</string>
+    <string name="ok">Yeap!</string>
+    <string name="no">Nope</string>
+    <string name="show_keypad">Show keypad</string>
+    <string name="hide_keypad">Hide keypad</string>
 </resources>
