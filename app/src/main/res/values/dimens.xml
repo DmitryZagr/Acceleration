@@ -7,4 +7,5 @@
     <dimen name="message_margin">56dp</dimen>
     <dimen name="message_padding">8dp</dimen>
     <dimen name="message_distance">8dp</dimen>
+    <dimen name="message_parent_padding">24dp</dimen>
 </resources>

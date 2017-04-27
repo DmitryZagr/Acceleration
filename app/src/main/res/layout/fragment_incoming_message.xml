@@ -11,7 +11,10 @@
         android:layout_marginRight="@dimen/message_margin"
         android:layout_marginTop="@dimen/message_distance"
         android:layout_marginBottom="@dimen/message_distance"
-        android:padding="@dimen/message_padding"
+        android:paddingLeft="@dimen/message_parent_padding"
+        android:paddingRight="@dimen/message_padding"
+        android:paddingBottom="@dimen/message_padding"
+        android:paddingTop="@dimen/message_padding"
         android:layout_alignParentLeft="true"
         android:textAppearance="?attr/textAppearanceListItem"
         android:background="@drawable/incoming_message_background"/>
