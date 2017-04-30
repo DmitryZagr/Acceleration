@@ -16,7 +16,7 @@ public class MessageData {
     public static AtomicInteger count = new AtomicInteger(0);
 
     private static final String[] messages = new String[]{
-            "Hello!", "How are you?", "Now we are going to talk about...Lorem Ipsum. Lorem Ipsum" +
+            "Hello! Send something to me!", "How are you?", "Now we are going to talk about...Lorem Ipsum. Lorem Ipsum" +
             " - это текст-\"рыба\", \" \n" +
             "\"часто используемый в печати и вэб-дизайне. Lorem Ipsum является \" \n" +
             "\"стандартной \"рыбой\" для текстов на латинице с начала XVI века.",
@@ -24,8 +24,8 @@ public class MessageData {
     };
 
     static {
-        // Add some sample items.
-        for (int i = 1; i <= 3; i++) {
+//         Add some sample items.
+        for (int i = 1; i <= 25; i++) {
             addItem(createMessage(i));
         }
     }
@@ -40,7 +40,7 @@ public class MessageData {
         Random generator = new Random();
         return new MessageModel(String.valueOf(position),
                 messages[generator.nextInt(messages.length)],
-                generator.nextInt(2));
+                position % 2);
     }
 
     public static class MessageModel {
