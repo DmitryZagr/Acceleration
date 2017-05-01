@@ -21,14 +21,23 @@
         android:textAppearance="?attr/textAppearanceListItem"/>
 
     <ImageView
+        android:id="@+id/picture"
         android:layout_marginLeft="@dimen/message_parent_padding"
         android:layout_marginRight="@dimen/message_padding"
         android:layout_marginBottom="@dimen/message_padding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/test"
         android:adjustViewBounds="true"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        android:visibility="gone"/>
+
+    <ProgressBar
+        android:id="@+id/picture_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/message_parent_padding"
+        android:layout_marginBottom="@dimen/message_padding"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/time"

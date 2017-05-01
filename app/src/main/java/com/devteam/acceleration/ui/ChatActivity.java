@@ -159,10 +159,7 @@ public class ChatActivity extends AppCompatActivity
             prevCustomKeyboardState = customKeyboardState;
             manageBottomLayout();
         }
-        else {
-//            if (prevCustomKeyboardState == CUSTOM_KEYBOARD_SHOW)
-            super.onBackPressed();
-        }
+        else super.onBackPressed();
     }
 
     @Override
@@ -190,14 +187,6 @@ public class ChatActivity extends AppCompatActivity
             params = (LinearLayout.LayoutParams) mMessages.getView().getLayoutParams();
             params.weight = 100.0f;
             mMessages.getView().setLayoutParams(params);
-
-//            params = (LinearLayout.LayoutParams) mAnswers.getView().getLayoutParams();
-//            params.weight = 0.0f;
-//            mAnswers.getView().setLayoutParams(params);
-//
-//            params = (LinearLayout.LayoutParams) mMessages.getView().getLayoutParams();
-//            params.weight = 100.0f;
-//            mMessages.getView().setLayoutParams(params);
         } else if (customKeyboardState == CUSTOM_KEYBOARD_SHOW) {
             System.out.println("SHOW");
 
@@ -225,7 +214,9 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onAnswersFragmentInteraction(AnswersData.AnswerModel item) {
 
-        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
+        //TODO appearing messages for test, remove in production
+        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
+        mMessages.addMessageAndUpdateList("Answer:", MessageData.INCOMING_MESSAGE, "http://i.imgur.com/DvpvklR.png");
 
 //        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 //        NetworkInfo ni = cm.getActiveNetworkInfo();
@@ -269,7 +260,7 @@ public class ChatActivity extends AppCompatActivity
                     if (message == null)
                         message = "";
                     String from = intent.getStringExtra(AccelerationConnectionService.BUNDLE_FROM_JID);
-                    mMessages.addMessageAndUpdateList(from + ":\n" + message, MessageData.INCOMING_MESSAGE);
+                    mMessages.addMessageAndUpdateList(from + ":\n" + message, MessageData.INCOMING_MESSAGE, null);
                 }
             }
         };
