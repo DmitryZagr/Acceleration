@@ -94,11 +94,12 @@ public class MessageFragment extends Fragment {
         mListener = null;
     }
 
-    public void addMessageAndUpdateList(String content, int type) {
+    public void addMessageAndUpdateList(String content, int type, String URL) {
         MessageData.addItem(new MessageData.MessageModel(
                 String.valueOf(MessageData.count),
                 content,
-                type));
+                type,
+                URL));
         MessagesAdapter.notifyDataSetChanged();
         recyclerView.scrollToPosition(MessageData.count.get() - 1);
     }

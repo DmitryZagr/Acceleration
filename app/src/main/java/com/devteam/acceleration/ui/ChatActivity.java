@@ -113,7 +113,6 @@ public class ChatActivity extends AppCompatActivity
                 }
                 else {
                     if (softKeyboardShowed) {
-                        hideButtonMore();
                         softKeyboardShowed = false;
                         System.out.println("keyboard closed " + heightDiff + " = " + defDiff);
                         if (customKeyboardState != prevCustomKeyboardState) {
@@ -121,6 +120,7 @@ public class ChatActivity extends AppCompatActivity
                             System.out.println("Changed all back");
                             manageBottomLayout();
                         }
+                        else hideButtonMore();
                     }
                 }
             }
@@ -159,9 +159,7 @@ public class ChatActivity extends AppCompatActivity
             prevCustomKeyboardState = customKeyboardState;
             manageBottomLayout();
         }
-        else {
-            super.onBackPressed();
-        }
+        else super.onBackPressed();
     }
 
     @Override
@@ -176,22 +174,34 @@ public class ChatActivity extends AppCompatActivity
     private void manageBottomLayout() {
         if (customKeyboardState == CUSTOM_KEYBOARD_HIDE) {
             System.out.println("HIDE");
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mAnswers.getView().getLayoutParams();
+
             FragmentManager fm = getSupportFragmentManager();
             fm.beginTransaction()
                     .hide(mAnswers)
-                    .commit();
+                    .commitNow();
+
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mAnswers.getView().getLayoutParams();
+            params.weight = 0.0f;
+            mAnswers.getView().setLayoutParams(params);
+
+            params = (LinearLayout.LayoutParams) mMessages.getView().getLayoutParams();
             params.weight = 100.0f;
             mMessages.getView().setLayoutParams(params);
         } else if (customKeyboardState == CUSTOM_KEYBOARD_SHOW) {
             System.out.println("SHOW");
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mMessages.getView().getLayoutParams();
-            params.weight = 50.0f;
-            mMessages.getView().setLayoutParams(params);
+
             FragmentManager fm = getSupportFragmentManager();
             fm.beginTransaction()
                     .show(mAnswers)
                     .commit();
+
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mMessages.getView().getLayoutParams();
+            params.weight = 50.0f;
+            mMessages.getView().setLayoutParams(params);
+
+            params = (LinearLayout.LayoutParams) mAnswers.getView().getLayoutParams();
+            params.weight = 50.0f;
+            mAnswers.getView().setLayoutParams(params);
         }
     }
 
@@ -204,20 +214,23 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public void onAnswersFragmentInteraction(AnswersData.AnswerModel item) {
 
+        //TODO appearing messages for test, remove in production
+        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
+        mMessages.addMessageAndUpdateList("Answer:", MessageData.INCOMING_MESSAGE, "http://i.imgur.com/DvpvklR.png");
 
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-
-        if(ni !=  null && ni.isConnected()) {
-            Intent intent = new Intent(AccelerationConnectionService.SEND_MESSAGE);
-            intent.putExtra(AccelerationConnectionService.MESSAGE_BODY, item.toString());
-            intent.putExtra(AccelerationConnectionService.BUNDLE_TO, bot);
-            sendBroadcast(intent);
-
-            mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
-        } else {
-            Toast.makeText(this, "No network", Toast.LENGTH_LONG).show();
-        }
+//        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+//        NetworkInfo ni = cm.getActiveNetworkInfo();
+//
+//        if(ni !=  null && ni.isConnected()) {
+//            Intent intent = new Intent(AccelerationConnectionService.SEND_MESSAGE);
+//            intent.putExtra(AccelerationConnectionService.MESSAGE_BODY, item.toString());
+//            intent.putExtra(AccelerationConnectionService.BUNDLE_TO, bot);
+//            sendBroadcast(intent);
+//
+//            mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
+//        } else {
+//            Toast.makeText(this, "No network", Toast.LENGTH_LONG).show();
+//        }
 
     }
 
@@ -247,7 +260,7 @@ public class ChatActivity extends AppCompatActivity
                     if (message == null)
                         message = "";
                     String from = intent.getStringExtra(AccelerationConnectionService.BUNDLE_FROM_JID);
-                    mMessages.addMessageAndUpdateList(from + ":\n" + message, MessageData.INCOMING_MESSAGE);
+                    mMessages.addMessageAndUpdateList(from + ":\n" + message, MessageData.INCOMING_MESSAGE, null);
                 }
             }
         };
