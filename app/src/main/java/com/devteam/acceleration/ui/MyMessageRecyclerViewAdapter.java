@@ -4,6 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -15,6 +17,7 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
 
     private final List<MessageData.MessageModel> mValues;
     private final MessageFragment.OnListFragmentInteractionListener mListener;
+    private int lastItem = -1;
 
     public MyMessageRecyclerViewAdapter(List<MessageData.MessageModel> items,
                                         MessageFragment.OnListFragmentInteractionListener listener) {
@@ -54,6 +57,7 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
                 }
             }
         });
+        setAnimation(holder.itemView, position, holder.mMessage.getType());
     }
 
     @Override
@@ -61,27 +65,42 @@ public class MyMessageRecyclerViewAdapter extends RecyclerView.Adapter<MyMessage
         return mValues.size();
     }
 
+    private void setAnimation(View viewToAnimate, int position, int type) {
+        // If the bound view wasn't previously displayed on screen, it's animated
+//        System.out.println(position + " == " + (getItemCount() - 1));
+        if (position > lastItem)
+        {
+            Animation animation = AnimationUtils.loadAnimation(viewToAnimate.getContext(), android.R.anim.slide_in_left);
+            viewToAnimate.startAnimation(animation);
+            lastItem = position;
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(final ViewHolder holder) {
+        holder.clearAnimation();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public Integer id;
-//        public final Integer margin;
-//        public final Integer distance;
         public final TextView mContentView;
         public MessageData.MessageModel mMessage;
-
         public ViewHolder(View view) {
             super(view);
             mView = view;
             id = 0;
             mContentView = (TextView) view.findViewById(R.id.content);
-//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mContentView.getLayoutParams();
-//            margin = params.leftMargin;
-//            distance = params.topMargin;
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
+        }
+
+        public void clearAnimation()
+        {
+            mView.clearAnimation();
         }
     }
 }

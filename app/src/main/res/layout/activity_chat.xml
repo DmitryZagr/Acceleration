@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:weightSum="100"
     android:orientation="vertical"
+    android:animateLayoutChanges="true"
     tools:context="com.devteam.acceleration.ui.ChatActivity">
 
     <fragment
@@ -29,8 +30,6 @@
         style="@style/Widget.AppCompat.Button.Borderless"/>
 
     <View style="@style/Divider"/>
-
-
 
     <RelativeLayout
         android:layout_width="match_parent"
