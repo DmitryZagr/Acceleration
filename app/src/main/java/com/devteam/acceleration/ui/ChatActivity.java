@@ -3,6 +3,8 @@ package com.devteam.acceleration.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
@@ -18,10 +20,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.devteam.acceleration.R;
 import com.devteam.acceleration.jabber.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Message;
+
+import java.io.IOException;
 
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,
@@ -49,12 +58,13 @@ public class ChatActivity extends AppCompatActivity
     private AlertDialog logoutConfirm;
     //TODO : c этим надо чет сделать
     //
-    public static final String bot = "user@192.168.43.98";
+    public static final String bot = "lol@192.168.0.11";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("On create");
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_chat);
         mMessages = (MessageFragment) getSupportFragmentManager().findFragmentById(R.id.messages_fragment);
         mAnswers = (AnswersFragment) getSupportFragmentManager().findFragmentById(R.id.answers_fragment);
@@ -135,6 +145,9 @@ public class ChatActivity extends AppCompatActivity
                 })
                 .setNegativeButton(R.string.no, null);
         logoutConfirm = builder.create();
+
+        initCallback();
+
     }
 
     private void hideButtonMore() {
@@ -206,23 +219,33 @@ public class ChatActivity extends AppCompatActivity
     public void onAnswersFragmentInteraction(AnswersData.AnswerModel item) {
 
         //TODO appearing messages for test, remove in production
-        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
-        mMessages.addMessageAndUpdateList("Answer:", MessageData.INCOMING_MESSAGE, "http://i.imgur.com/DvpvklR.png");
+//        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
+//        mMessages.addMessageAndUpdateList("Answer:", MessageData.INCOMING_MESSAGE, "http://i.imgur.com/DvpvklR.png");
 
-//        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-//        NetworkInfo ni = cm.getActiveNetworkInfo();
-//
-//        if(ni !=  null && ni.isConnected()) {
-//            Intent intent = new Intent(ConnectionService.SEND_MESSAGE);
-//            intent.putExtra(ConnectionService.MESSAGE_BODY, item.toString());
-//            intent.putExtra(ConnectionService.BUNDLE_TO, bot);
-//            sendBroadcast(intent);
-//
-//            mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
-//        } else {
-//            Toast.makeText(this, "No network", Toast.LENGTH_LONG).show();
-//        }
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
 
+        if (ni != null && ni.isConnected()) {
+
+            JabberChat.getJabberChat().sendMessage(item.toString(), bot);
+            mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
+        } else {
+            Toast.makeText(this, "No network", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void initCallback() {
+        JabberChat.getJabberChat().bindCallback(new JabberChat.Callback() {
+            @Override
+            public void onCallback(Message message, Exception e) {
+                if (e instanceof Exception) {
+                    Toast.makeText(ChatActivity.this, "Message not sent", Toast.LENGTH_LONG).show();
+                } else if(message != null) {
+                    mMessages.addMessageAndUpdateList(message.getBody(), MessageData.INCOMING_MESSAGE, null);
+                }
+            }
+        });
     }
 
     @Override

@@ -1,6 +1,9 @@
 package com.devteam.acceleration.jabber;
 
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.devteam.acceleration.jabber.executors.Ui;
 
@@ -18,8 +21,10 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jxmpp.jid.EntityJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -27,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import static android.content.Context.CONNECTIVITY_SERVICE;
 
 
 /**
@@ -84,7 +91,6 @@ public class JabberChat implements ConnectionListener {
     public void unbindCallback() {
         this.callback = null;
     }
-
 
     public void createAccount() {
 
@@ -153,6 +159,9 @@ public class JabberChat implements ConnectionListener {
                             } else {
                                 contactJid = from;
                             }
+
+                            notifyUI(message, null);
+
                             Log.d(TAG, "Received message from :" + contactJid + " broadcast sent.");
                         }
                     };
@@ -161,7 +170,6 @@ public class JabberChat implements ConnectionListener {
                     ChatManager.getInstanceFor(connection).addChatListener(new ChatManagerListener() {
                         @Override
                         public void chatCreated(Chat chat, boolean createdLocally) {
-
                             //If the line below is missing ,processMessage won't be triggered and you won't receive messages.
                             chat.addMessageListener(chatMessageListener);
                         }
@@ -190,6 +198,20 @@ public class JabberChat implements ConnectionListener {
         });
     }
 
+    public void sendMessage(String body, String toJid) {
+        Log.d(TAG, "Sending message to :" + toJid);
+        try {
+            if(connection == null || !connection.isConnected()) {
+                loginToChat();
+            }
+                Chat chat = ChatManager.getInstanceFor(connection)
+                        .createChat((EntityJid) JidCreate.from(toJid), chatMessageListener);
+                chat.sendMessage(body);
+        } catch (SmackException.NotConnectedException | XmppStringprepException | InterruptedException e) {
+            notifyUI(null, e);
+        }
+    }
+
 
     public void disconnect() {
         Log.d(TAG, "Disconnecting from server " + jabberModel.getServiceName());
@@ -197,9 +219,9 @@ public class JabberChat implements ConnectionListener {
         if (connection != null && connection.isConnected()) {
             connection.disconnect();
         }
+        chatMessageListener = null;
         connection = null;
     }
-
 
     @Override
     public void connected(XMPPConnection connection) {

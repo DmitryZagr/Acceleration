@@ -64,7 +64,13 @@ public class LoginActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         if (prefs.getBoolean(JabberParams.LOGGED_IN, false)) {
+            JabberModel jabberModel = new JabberModel();
+            jabberModel.setJabberId(prefs.getString(JabberParams.JABBER_ID, "null@null"));
+            jabberModel.setPassword(prefs.getString(JabberParams.USER_PASSWORD, ""));
+            JabberChat.getJabberChat().setJabberModel(jabberModel);
+            JabberChat.getJabberChat().loginToChat();
             showChatActivity();
+            return;
         }
 
         initCallback();
