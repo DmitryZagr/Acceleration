@@ -26,9 +26,6 @@
         </activity>
         <activity android:name=".ui.ChatActivity"></activity>
 
-        <service android:name=".jabber.AccelerationConnectionService">
-
-        </service>
     </application>
 
 </manifest>

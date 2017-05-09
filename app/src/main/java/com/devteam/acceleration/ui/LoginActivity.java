@@ -3,10 +3,7 @@ package com.devteam.acceleration.ui;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
@@ -16,23 +13,22 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devteam.acceleration.R;
-import com.devteam.acceleration.jabber.AccelerationConnectionService;
-import com.devteam.acceleration.jabber.AccelerationJabberConnection;
-import com.devteam.acceleration.jabber.AccelerationJabberParams;
+import com.devteam.acceleration.jabber.JabberChat;
+import com.devteam.acceleration.jabber.JabberModel;
+import com.devteam.acceleration.jabber.JabberParams;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.Message;
 
 
 /**
@@ -58,13 +54,17 @@ public class LoginActivity extends AppCompatActivity {
     private EditText userNameView;
     private View progressView;
     private View loginFormView;
-    private BroadcastReceiver loginActivityReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initBroadcastReceicer();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+        if (prefs.getBoolean(JabberParams.LOGGED_IN, false) == true) {
+            showChatActivity();
+        }
+
+        initCallback();
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
@@ -85,10 +85,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO comment this intent and uncomment attemptLogin();
-                final Intent sw = new Intent(LoginActivity.this, ChatActivity.class);
-                sw.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(sw);
-//                attemptLogin();
+//                final Intent sw = new Intent(LoginActivity.this, ChatActivity.class);
+//                sw.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(sw);
+                attemptLogin();
             }
         });
 
@@ -133,21 +133,26 @@ public class LoginActivity extends AppCompatActivity {
         progressView = findViewById(R.id.login_progress);
     }
 
-    private void initBroadcastReceicer() {
-        loginActivityReceiver = new BroadcastReceiver() {
+    private void initCallback() {
+        JabberChat.getJabberChat().bindCallback(new JabberChat.Callback() {
             @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(AccelerationConnectionService.CONNECTION_EVENT)) {
+            public void onCallback(Message message, Exception e) {
+                if (e == null) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+                    prefs.edit().putBoolean(JabberParams.LOGGED_IN, true).apply();
+                    showChatActivity();
+                } else if (e instanceof XMPPException) {
+                    Toast.makeText(LoginActivity.this, "User already exists", Toast.LENGTH_LONG).show();
                     showProgress(false);
-                    Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_LONG).show();
                 }
             }
-        };
+        });
+    }
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(AccelerationConnectionService.CONNECTION_EVENT);
-        registerReceiver(loginActivityReceiver, filter);
+    private void showChatActivity() {
+        final Intent sw = new Intent(LoginActivity.this, ChatActivity.class);
+        sw.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(sw);
     }
 
 
@@ -158,29 +163,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-
-    @Override
     protected void onDestroy() {
-        if (loginActivityReceiver != null) {
-            unregisterReceiver(loginActivityReceiver);
-            loginActivityReceiver = null;
-        }
+        JabberChat.getJabberChat().unbindCallback();
         super.onDestroy();
     }
 
 
     private void startChatIfLogin() {
         showProgress(false);
-        if (AccelerationConnectionService.connectionState.equals(AccelerationJabberConnection.ConnectionState.AUTHENTICATED)) {
+        if (JabberChat.connectionState.equals(JabberChat.ConnectionState.AUTHENTICATED)) {
             Intent intent = new Intent(this, ChatActivity.class);
             startActivity(intent);
         }
@@ -219,8 +210,9 @@ public class LoginActivity extends AppCompatActivity {
         if (!cancel) {
             showProgress(true);
             saveCredentials(true);
-        }
+            JabberChat.getJabberChat().createAccount();
 
+        }
     }
 
 
@@ -269,6 +261,7 @@ public class LoginActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress(true);
             saveCredentials(false);
+            JabberChat.getJabberChat().loginToChat();
         }
     }
 
@@ -325,19 +318,24 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String password = new String(Hex.encodeHex(DigestUtils.sha(passwordView.getText().toString())));
 
+        JabberModel jabberModel = new JabberModel();
+        jabberModel.setJabberId(jabberIdView.getText().toString());
+        jabberModel.setPassword(password);
+        jabberModel.setEmail(emailView.getText().toString());
+        jabberModel.setName(userNameView.getText().toString());
+
+        JabberChat.getJabberChat().setJabberModel(jabberModel);
+
         prefs.edit()
-                .putString(AccelerationJabberParams.JABBER_ID, jabberIdView.getText().toString())
-                .putString(AccelerationJabberParams.USER_PASSWORD, password)
-                .putBoolean(AccelerationJabberParams.isRegistration, isRegistration).apply();
+                .putString(JabberParams.JABBER_ID, jabberIdView.getText().toString())
+                .putString(JabberParams.USER_PASSWORD, password)
+                .putBoolean(JabberParams.isRegistration, isRegistration)
+                .putBoolean(JabberParams.LOGGED_IN, false).apply();
 
 
         if (isRegistration) {
-            prefs.edit().putString(AccelerationJabberParams.USER_NAME, userNameView.getText().toString())
-                    .putString(AccelerationJabberParams.USER_EMAIL, emailView.getText().toString()).apply();
+            prefs.edit().putString(JabberParams.USER_NAME, userNameView.getText().toString())
+                    .putString(JabberParams.USER_EMAIL, emailView.getText().toString()).apply();
         }
-
-        //Start the service
-        Intent i1 = new Intent(this, AccelerationConnectionService.class);
-        startService(i1);
     }
 }

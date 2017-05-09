@@ -1,12 +1,7 @@
 package com.devteam.acceleration.ui;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.IntentFilter;
-import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.os.StrictMode;
@@ -21,10 +16,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.devteam.acceleration.R;
-import com.devteam.acceleration.jabber.AccelerationConnectionService;
 
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,
@@ -50,7 +43,6 @@ public class ChatActivity extends AppCompatActivity
     private EditText requestField;
     private Button hideButton;
     private AlertDialog logoutConfirm;
-    private BroadcastReceiver chatBroadcastReceiver;
     //TODO : c этим надо чет сделать
     //
     public static final String bot = "user@192.168.43.98";
@@ -139,7 +131,7 @@ public class ChatActivity extends AppCompatActivity
                 })
                 .setNegativeButton(R.string.no, null);
         logoutConfirm = builder.create();
-        initBroadcastReceiver();
+//        initBroadcastReceiver();
     }
 
     private void hideButtonMore() {
@@ -164,9 +156,9 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        if (chatBroadcastReceiver != null) {
-            unregisterReceiver(chatBroadcastReceiver);
-        }
+//        if (chatBroadcastReceiver != null) {
+//            unregisterReceiver(chatBroadcastReceiver);
+//        }
         super.onDestroy();
     }
 
@@ -222,9 +214,9 @@ public class ChatActivity extends AppCompatActivity
 //        NetworkInfo ni = cm.getActiveNetworkInfo();
 //
 //        if(ni !=  null && ni.isConnected()) {
-//            Intent intent = new Intent(AccelerationConnectionService.SEND_MESSAGE);
-//            intent.putExtra(AccelerationConnectionService.MESSAGE_BODY, item.toString());
-//            intent.putExtra(AccelerationConnectionService.BUNDLE_TO, bot);
+//            Intent intent = new Intent(ConnectionService.SEND_MESSAGE);
+//            intent.putExtra(ConnectionService.MESSAGE_BODY, item.toString());
+//            intent.putExtra(ConnectionService.BUNDLE_TO, bot);
 //            sendBroadcast(intent);
 //
 //            mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE);
@@ -249,24 +241,5 @@ public class ChatActivity extends AppCompatActivity
 
     }
 
-    private void initBroadcastReceiver() {
-
-        chatBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(AccelerationConnectionService.NEW_MESSAGE)) {
-                    String message = intent.getStringExtra(AccelerationConnectionService.MESSAGE_BODY);
-                    if (message == null)
-                        message = "";
-                    String from = intent.getStringExtra(AccelerationConnectionService.BUNDLE_FROM_JID);
-                    mMessages.addMessageAndUpdateList(from + ":\n" + message, MessageData.INCOMING_MESSAGE, null);
-                }
-            }
-        };
-
-        IntentFilter intentFilter = new IntentFilter(AccelerationConnectionService.NEW_MESSAGE);
-        registerReceiver(chatBroadcastReceiver, intentFilter);
-    }
 
 }
