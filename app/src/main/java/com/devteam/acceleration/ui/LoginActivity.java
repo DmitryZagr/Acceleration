@@ -27,8 +27,11 @@ import com.devteam.acceleration.jabber.JabberParams;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+
+import java.io.IOException;
 
 
 /**
@@ -60,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
-        if (prefs.getBoolean(JabberParams.LOGGED_IN, false) == true) {
+        if (prefs.getBoolean(JabberParams.LOGGED_IN, false)) {
             showChatActivity();
         }
 
@@ -143,8 +146,11 @@ public class LoginActivity extends AppCompatActivity {
                     showChatActivity();
                 } else if (e instanceof XMPPException) {
                     Toast.makeText(LoginActivity.this, "User already exists", Toast.LENGTH_LONG).show();
-                    showProgress(false);
+                    jabberIdView.setError("Not valid");
+                } else if (e instanceof SmackException || e instanceof IOException || e instanceof InterruptedException) {
+                    Toast.makeText(LoginActivity.this, "Couldn't connect to server", Toast.LENGTH_LONG).show();
                 }
+                showProgress(false);
             }
         });
     }

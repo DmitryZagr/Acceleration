@@ -2,6 +2,8 @@ package com.devteam.acceleration.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.os.StrictMode;
@@ -18,6 +20,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.devteam.acceleration.R;
+import com.devteam.acceleration.jabber.JabberChat;
+import com.devteam.acceleration.jabber.JabberParams;
 
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,
@@ -56,7 +60,7 @@ public class ChatActivity extends AppCompatActivity
         mAnswers = (AnswersFragment) getSupportFragmentManager().findFragmentById(R.id.answers_fragment);
         requestField = (EditText) findViewById(R.id.request_field);
         manageBottomLayout();
-        final Button buttonSend = (Button)findViewById(R.id.action_send);
+        final Button buttonSend = (Button) findViewById(R.id.action_send);
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,14 +73,12 @@ public class ChatActivity extends AppCompatActivity
             public void onClick(View view) {
                 if (softKeyboardShowed) {
                     hideButtonMore();
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
-                else if (customKeyboardState == CUSTOM_KEYBOARD_HIDE) {
+                } else if (customKeyboardState == CUSTOM_KEYBOARD_HIDE) {
                     hideButtonLess();
                     customKeyboardState = CUSTOM_KEYBOARD_SHOW;
-                }
-                else if (customKeyboardState == CUSTOM_KEYBOARD_SHOW) {
+                } else if (customKeyboardState == CUSTOM_KEYBOARD_SHOW) {
                     hideButtonMore();
                     customKeyboardState = CUSTOM_KEYBOARD_HIDE;
                 }
@@ -102,8 +104,7 @@ public class ChatActivity extends AppCompatActivity
                         customKeyboardState = CUSTOM_KEYBOARD_HIDE;
                         manageBottomLayout();
                     }
-                }
-                else {
+                } else {
                     if (softKeyboardShowed) {
                         softKeyboardShowed = false;
                         System.out.println("keyboard closed " + heightDiff + " = " + defDiff);
@@ -111,8 +112,7 @@ public class ChatActivity extends AppCompatActivity
                             customKeyboardState = prevCustomKeyboardState;
                             System.out.println("Changed all back");
                             manageBottomLayout();
-                        }
-                        else hideButtonMore();
+                        } else hideButtonMore();
                     }
                 }
             }
@@ -124,6 +124,10 @@ public class ChatActivity extends AppCompatActivity
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         //TODO logout routine (comment intent for test!)
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
+                        prefs.edit().putBoolean(JabberParams.LOGGED_IN, false).apply();
+                        JabberChat.getJabberChat().disconnect();
+
                         final Intent logout = new Intent(ChatActivity.this, LoginActivity.class);
                         logout.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(logout);
@@ -131,7 +135,6 @@ public class ChatActivity extends AppCompatActivity
                 })
                 .setNegativeButton(R.string.no, null);
         logoutConfirm = builder.create();
-//        initBroadcastReceiver();
     }
 
     private void hideButtonMore() {
@@ -150,15 +153,11 @@ public class ChatActivity extends AppCompatActivity
             customKeyboardState = CUSTOM_KEYBOARD_HIDE;
             prevCustomKeyboardState = customKeyboardState;
             manageBottomLayout();
-        }
-        else super.onBackPressed();
+        } else super.onBackPressed();
     }
 
     @Override
     protected void onDestroy() {
-//        if (chatBroadcastReceiver != null) {
-//            unregisterReceiver(chatBroadcastReceiver);
-//        }
         super.onDestroy();
     }
 

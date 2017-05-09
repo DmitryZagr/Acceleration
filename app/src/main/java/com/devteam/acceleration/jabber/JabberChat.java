@@ -106,14 +106,7 @@ public class JabberChat implements ConnectionListener {
                     loginToChat();
                     callback.onCallback(null, null);
 
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (SmackException e) {
-                    e.printStackTrace();
-                } catch (XMPPException e) {
-//                    e.printStackTrace();
+                } catch (InterruptedException | IOException | SmackException | XMPPException e) {
                     notifyUI(null, e);
                 }
             }
@@ -180,14 +173,8 @@ public class JabberChat implements ConnectionListener {
 
                     notifyUI(null, null);
 
-                } catch (XMPPException e) {
-                    e.printStackTrace();
-                } catch (SmackException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (InterruptedException | IOException | SmackException | XMPPException e) {
+                    notifyUI(null, e);
                 }
             }
         });
@@ -197,7 +184,7 @@ public class JabberChat implements ConnectionListener {
         Ui.run(new Runnable() {
             @Override
             public void run() {
-                if(callback != null)
+                if (callback != null)
                     callback.onCallback(message, e);
             }
         });
