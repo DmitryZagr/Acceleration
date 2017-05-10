@@ -52,9 +52,9 @@ public class JabberChat implements ConnectionListener {
 
     private final Executor executor = Executors.newCachedThreadPool();
 
-    private Callback callback;
+    private CallbackMessage callback;
 
-    public interface Callback {
+    public interface CallbackMessage {
         void onCallback(Message message, Exception error);
     }
 
@@ -84,7 +84,7 @@ public class JabberChat implements ConnectionListener {
         }
     }
 
-    public void bindCallback(Callback callback) {
+    public void bindCallback(CallbackMessage callback) {
         this.callback = callback;
     }
 

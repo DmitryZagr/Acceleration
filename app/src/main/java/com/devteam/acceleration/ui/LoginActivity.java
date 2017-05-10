@@ -143,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initCallback() {
-        JabberChat.getJabberChat().bindCallback(new JabberChat.Callback() {
+        JabberChat.getJabberChat().bindCallback(new JabberChat.CallbackMessage() {
             @Override
             public void onCallback(Message message, Exception e) {
                 if (e == null) {

@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.devteam.acceleration.R;
+import com.devteam.acceleration.jabber.db.JabberDbHelper;
 import com.devteam.acceleration.jabber.executors.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
 
@@ -53,6 +54,7 @@ public class ChatActivity extends AppCompatActivity
     private EditText requestField;
     private Button hideButton;
     private AlertDialog logoutConfirm;
+    private JabberDbHelper jabberDbHelper;
     //TODO : c этим надо чет сделать
     //
     public static final String bot = "lol@192.168.0.11";
@@ -148,8 +150,9 @@ public class ChatActivity extends AppCompatActivity
                 .setNegativeButton(R.string.no, null);
         logoutConfirm = builder.create();
 
-        initCallback();
+        initCallbackChat();
 
+        jabberDbHelper = new JabberDbHelper(this);
     }
 
     private void hideButtonMore() {
@@ -173,6 +176,8 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
+        JabberChat.getJabberChat().unbindCallback();
+        jabberDbHelper.close();
         super.onDestroy();
     }
 
@@ -245,8 +250,8 @@ public class ChatActivity extends AppCompatActivity
     }
 
 
-    private void initCallback() {
-        JabberChat.getJabberChat().bindCallback(new JabberChat.Callback() {
+    private void initCallbackChat() {
+        JabberChat.getJabberChat().bindCallback(new JabberChat.CallbackMessage() {
             @Override
             public void onCallback(Message message, Exception e) {
                 if (e instanceof Exception) {

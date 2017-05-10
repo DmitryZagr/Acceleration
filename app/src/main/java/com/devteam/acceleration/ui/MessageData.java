@@ -51,7 +51,7 @@ public class MessageData {
         private final String content;
         private final int type;
         private final String URL;
-        private final Date time;
+        private  Date time;
 
         public MessageModel(String id, String content, int type, String URL) {
             this.id = id;
@@ -59,6 +59,14 @@ public class MessageData {
             this.type = type;
             this.URL = URL;
             this.time = new java.util.Date();
+        }
+
+        public MessageModel(String id, String content, int type, String URL, String date) {
+            this.id = id;
+            this.content = content;
+            this.type = type;
+            this.URL = URL;
+            this.time = new java.util.Date(date);
         }
 
         public String getId() {
