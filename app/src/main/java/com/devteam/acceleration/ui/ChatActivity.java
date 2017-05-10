@@ -27,7 +27,6 @@ import com.devteam.acceleration.jabber.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
 
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.util.StringUtils;
 
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,
@@ -44,8 +43,6 @@ public class ChatActivity extends AppCompatActivity
 
     private static final int CUSTOM_KEYBOARD_SHOW = 0;
     private static final int CUSTOM_KEYBOARD_HIDE = 1;
-
-    private static boolean isServerAvalible = false;
 
     private static int customKeyboardState = CUSTOM_KEYBOARD_HIDE;
     private static int prevCustomKeyboardState = customKeyboardState;
@@ -235,11 +232,10 @@ public class ChatActivity extends AppCompatActivity
         if (ni != null && ni.isConnected()) {
             if (JabberChat.connectionState == JabberChat.ConnectionState.AUTHENTICATED) {
                 JabberChat.getJabberChat().sendMessage(item, bot);
-//                mMessages.addMessageAndUpdateList(item, MessageData.OUTGOING_MESSAGE, null);
-//                requestField.setText("");
+                mMessages.addMessageAndUpdateList(item, MessageData.OUTGOING_MESSAGE, null);
+                requestField.setText("");
             } else {
                 JabberChat.getJabberChat().loginToChat();
-//                Toast.makeText(ChatActivity.this, "Server is not available", Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(this, "No network", Toast.LENGTH_LONG).show();
@@ -253,7 +249,6 @@ public class ChatActivity extends AppCompatActivity
             public void onCallback(Message message, Exception e) {
                 if (e instanceof Exception) {
                     Toast.makeText(ChatActivity.this, "Server is not available", Toast.LENGTH_LONG).show();
-//                    isServerAvalible = false;
                     return;
                 } else if (message != null) {
                     mMessages.addMessageAndUpdateList(message.getBody(), MessageData.INCOMING_MESSAGE, null);
@@ -265,7 +260,6 @@ public class ChatActivity extends AppCompatActivity
                     mMessages.addMessageAndUpdateList(requestField.getText().toString(), MessageData.OUTGOING_MESSAGE, null);
                     requestField.setText("");
                 }
-//                isServerAvalible = true;
             }
         });
     }
