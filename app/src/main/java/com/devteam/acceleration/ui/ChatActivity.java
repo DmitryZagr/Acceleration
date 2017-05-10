@@ -23,7 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.devteam.acceleration.R;
-import com.devteam.acceleration.jabber.JabberChat;
+import com.devteam.acceleration.jabber.executors.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,9 +73,9 @@ public class ChatActivity extends AppCompatActivity
             public void onClick(View v) {
                 //TODO send text routine
                 String message = requestField.getText().toString();
-                
+
                 if (StringUtils.isNotBlank(message)) {
-                        sendMessage(message);
+                    sendMessage(message);
                 }
             }
         });

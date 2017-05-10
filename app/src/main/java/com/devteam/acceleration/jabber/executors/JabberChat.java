@@ -1,8 +1,9 @@
-package com.devteam.acceleration.jabber;
+package com.devteam.acceleration.jabber.executors;
 
 import android.util.Log;
 
-import com.devteam.acceleration.jabber.executors.Ui;
+import com.devteam.acceleration.jabber.JabberModel;
+import com.devteam.acceleration.jabber.JabberParams;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
@@ -216,7 +217,6 @@ public class JabberChat implements ConnectionListener {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-
                 try {
                     validateConnection();
 

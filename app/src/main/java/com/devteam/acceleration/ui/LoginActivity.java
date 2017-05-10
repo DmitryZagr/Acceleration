@@ -21,7 +21,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.devteam.acceleration.R;
-import com.devteam.acceleration.jabber.JabberChat;
+import com.devteam.acceleration.jabber.executors.JabberChat;
 import com.devteam.acceleration.jabber.JabberModel;
 import com.devteam.acceleration.jabber.JabberParams;
 
