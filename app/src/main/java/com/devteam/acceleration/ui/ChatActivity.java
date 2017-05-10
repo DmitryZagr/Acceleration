@@ -26,11 +26,8 @@ import com.devteam.acceleration.R;
 import com.devteam.acceleration.jabber.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
 
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
-
-import java.io.IOException;
+import org.jivesoftware.smack.util.StringUtils;
 
 public class ChatActivity extends AppCompatActivity
         implements AnswersFragment.OnListFragmentInteractionListener,
@@ -47,6 +44,8 @@ public class ChatActivity extends AppCompatActivity
 
     private static final int CUSTOM_KEYBOARD_SHOW = 0;
     private static final int CUSTOM_KEYBOARD_HIDE = 1;
+
+    private static boolean isServerAvalible = false;
 
     private static int customKeyboardState = CUSTOM_KEYBOARD_HIDE;
     private static int prevCustomKeyboardState = customKeyboardState;
@@ -75,6 +74,10 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 //TODO send text routine
+                String message = requestField.getText().toString();
+
+                if (message != null && !message.equals(""))
+                    sendMessage(message);
             }
         });
         hideButton = (Button) findViewById(R.id.action_hide);
@@ -222,28 +225,47 @@ public class ChatActivity extends AppCompatActivity
 //        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
 //        mMessages.addMessageAndUpdateList("Answer:", MessageData.INCOMING_MESSAGE, "http://i.imgur.com/DvpvklR.png");
 
+        sendMessage(item.toString());
+    }
+
+    private void sendMessage(String item) {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
 
         if (ni != null && ni.isConnected()) {
-
-            JabberChat.getJabberChat().sendMessage(item.toString(), bot);
-            mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
+            if (JabberChat.connectionState == JabberChat.ConnectionState.AUTHENTICATED) {
+                JabberChat.getJabberChat().sendMessage(item, bot);
+//                mMessages.addMessageAndUpdateList(item, MessageData.OUTGOING_MESSAGE, null);
+//                requestField.setText("");
+            } else {
+                JabberChat.getJabberChat().loginToChat();
+//                Toast.makeText(ChatActivity.this, "Server is not available", Toast.LENGTH_LONG).show();
+            }
         } else {
             Toast.makeText(this, "No network", Toast.LENGTH_LONG).show();
         }
-
     }
+
 
     private void initCallback() {
         JabberChat.getJabberChat().bindCallback(new JabberChat.Callback() {
             @Override
             public void onCallback(Message message, Exception e) {
                 if (e instanceof Exception) {
-                    Toast.makeText(ChatActivity.this, "Message not sent", Toast.LENGTH_LONG).show();
-                } else if(message != null) {
+                    Toast.makeText(ChatActivity.this, "Server is not available", Toast.LENGTH_LONG).show();
+//                    isServerAvalible = false;
+                    return;
+                } else if (message != null) {
                     mMessages.addMessageAndUpdateList(message.getBody(), MessageData.INCOMING_MESSAGE, null);
+                    return;
                 }
+
+                if (requestField.getText().length() != 0) {
+                    JabberChat.getJabberChat().sendMessage(requestField.getText().toString(), bot);
+                    mMessages.addMessageAndUpdateList(requestField.getText().toString(), MessageData.OUTGOING_MESSAGE, null);
+                    requestField.setText("");
+                }
+//                isServerAvalible = true;
             }
         });
     }

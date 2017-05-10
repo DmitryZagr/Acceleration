@@ -1,9 +1,6 @@
 package com.devteam.acceleration.jabber;
 
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.devteam.acceleration.jabber.executors.Ui;
 
@@ -24,7 +21,6 @@ import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jxmpp.jid.EntityJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
-import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,8 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import static android.content.Context.CONNECTIVITY_SERVICE;
 
 
 /**
@@ -53,6 +47,7 @@ public class JabberChat implements ConnectionListener {
     private XMPPTCPConnection connection;
     private JabberModel jabberModel;
     private ChatMessageListener chatMessageListener;
+    private ChatManagerListener chatManagerListener;
 
     private final Executor executor = Executors.newCachedThreadPool();
 
@@ -70,6 +65,10 @@ public class JabberChat implements ConnectionListener {
 
     public static enum LoggedInState {
         LOGGED_IN, LOGGED_OUT;
+    }
+
+    private JabberChat() {
+        initializeChatListeners();
     }
 
     public void setJabberModel(JabberModel jabberModel) {
@@ -98,10 +97,11 @@ public class JabberChat implements ConnectionListener {
             @Override
             public void run() {
                 try {
-                    if (connection == null || !connection.isConnected()) {
+                    if (connection == null) {
                         connect();
+                    } else if (!connection.isConnected()) {
+                        connection.connect();
                     }
-
                     AccountManager accountManager = AccountManager.getInstance(connection);
                     accountManager.sensitiveOperationOverInsecureConnection(true);
                     Map<String, String> atr = new HashMap<>();
@@ -131,7 +131,48 @@ public class JabberChat implements ConnectionListener {
 
         connection = new XMPPTCPConnection(builder.build());
         connection.addConnectionListener(this);
+
+        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+        ReconnectionManager.setEnabledPerDefault(true);
+        reconnectionManager.enableAutomaticReconnection();
+
+        ChatManager.getInstanceFor(connection).addChatListener(chatManagerListener);
+
         connection.connect();
+
+    }
+
+    private void initializeChatListeners() {
+        chatMessageListener = new ChatMessageListener() {
+            @Override
+            public void processMessage(Chat chat, Message message) {
+                ///ADDED
+                Log.d(TAG, "message.getBody() :" + message.getBody());
+                Log.d(TAG, "message.getFrom() :" + message.getFrom());
+
+                String from = message.getFrom().toString();
+                String contactJid = "";
+                if (from.contains("/")) {
+                    contactJid = from.split("/")[0];
+                    Log.d(TAG, "The real jid is :" + contactJid);
+                } else {
+                    contactJid = from;
+                }
+
+                notifyUI(message, null);
+
+                Log.d(TAG, "Received message from :" + contactJid + " broadcast sent.");
+            }
+        };
+
+        chatManagerListener = new ChatManagerListener() {
+            @Override
+            public void chatCreated(Chat chat, boolean createdLocally) {
+                //If the line below is missing ,processMessage won't be triggered and you won't receive messages.
+                chat.addMessageListener(chatMessageListener);
+            }
+        };
+
     }
 
     public void loginToChat() {
@@ -140,44 +181,15 @@ public class JabberChat implements ConnectionListener {
             @Override
             public void run() {
                 try {
-                    if (connection == null || !connection.isConnected()) {
+                    if (connection == null) {
                         connect();
+                    } else if (!connection.isConnected()) {
+                        connection.connect();
                     }
-                    connection.login();
-                    chatMessageListener = new ChatMessageListener() {
-                        @Override
-                        public void processMessage(Chat chat, Message message) {
-                            ///ADDED
-                            Log.d(TAG, "message.getBody() :" + message.getBody());
-                            Log.d(TAG, "message.getFrom() :" + message.getFrom());
 
-                            String from = message.getFrom().toString();
-                            String contactJid = "";
-                            if (from.contains("/")) {
-                                contactJid = from.split("/")[0];
-                                Log.d(TAG, "The real jid is :" + contactJid);
-                            } else {
-                                contactJid = from;
-                            }
-
-                            notifyUI(message, null);
-
-                            Log.d(TAG, "Received message from :" + contactJid + " broadcast sent.");
-                        }
-                    };
-
-                    //The snippet below is necessary for the message listener to be attached to our connection.
-                    ChatManager.getInstanceFor(connection).addChatListener(new ChatManagerListener() {
-                        @Override
-                        public void chatCreated(Chat chat, boolean createdLocally) {
-                            //If the line below is missing ,processMessage won't be triggered and you won't receive messages.
-                            chat.addMessageListener(chatMessageListener);
-                        }
-                    });
-
-                    ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
-                    ReconnectionManager.setEnabledPerDefault(true);
-                    reconnectionManager.enableAutomaticReconnection();
+                    if (!connection.isAuthenticated()) {
+                        connection.login();
+                    }
 
                     notifyUI(null, null);
 
@@ -198,17 +210,36 @@ public class JabberChat implements ConnectionListener {
         });
     }
 
-    public void sendMessage(String body, String toJid) {
+    public void sendMessage(final String body, final String toJid) {
         Log.d(TAG, "Sending message to :" + toJid);
-        try {
-            if(connection == null || !connection.isConnected()) {
-                loginToChat();
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    validateConnection();
+
+                    Chat chat = ChatManager.getInstanceFor(connection)
+                            .createChat((EntityJid) JidCreate.from(toJid), chatMessageListener);
+                    chat.sendMessage(body);
+                    notifyUI(null, null);
+                } catch (SmackException | InterruptedException | XMPPException | IOException e) {
+                    notifyUI(null, e);
+                }
             }
-                Chat chat = ChatManager.getInstanceFor(connection)
-                        .createChat((EntityJid) JidCreate.from(toJid), chatMessageListener);
-                chat.sendMessage(body);
-        } catch (SmackException.NotConnectedException | XmppStringprepException | InterruptedException e) {
-            notifyUI(null, e);
+        });
+    }
+
+    private void validateConnection() throws InterruptedException, XMPPException, SmackException, IOException {
+        if (connection == null) {
+            connect();
+        } else if (!connection.isConnected()) {
+            connection.connect();
+        }
+
+        if (!connection.isAuthenticated()) {
+            connection.login();
         }
     }
 
