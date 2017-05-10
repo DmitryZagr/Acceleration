@@ -26,6 +26,7 @@ import com.devteam.acceleration.R;
 import com.devteam.acceleration.jabber.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jivesoftware.smack.packet.Message;
 
 public class ChatActivity extends AppCompatActivity
@@ -72,9 +73,10 @@ public class ChatActivity extends AppCompatActivity
             public void onClick(View v) {
                 //TODO send text routine
                 String message = requestField.getText().toString();
-
-                if (message != null && !message.equals(""))
-                    sendMessage(message);
+                
+                if (StringUtils.isNotBlank(message)) {
+                        sendMessage(message);
+                }
             }
         });
         hideButton = (Button) findViewById(R.id.action_hide);
