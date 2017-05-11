@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import static com.devteam.acceleration.jabber.db.JabberContract.JabberEntry;
 
+import com.devteam.acceleration.jabber.db.JabberDbHelper;
 import com.devteam.acceleration.ui.MessageData;
 
 import org.jivesoftware.smack.packet.Message;
@@ -19,6 +20,8 @@ import java.util.concurrent.Executors;
  */
 
 public class JabberDB {
+
+    private static JabberDB INSTANCE = new JabberDB();
 
     private CallbackDB callbackDB;
     private final Executor executor = Executors.newCachedThreadPool();
@@ -34,6 +37,13 @@ public class JabberDB {
     public interface CallbackDB {
         void onCallbackDb(Exception error);
     }
+
+    private JabberDB() {}
+
+    public static JabberDB getInstance() {
+        return INSTANCE;
+    }
+
 
     public void saveMessage(final SQLiteDatabase db, final MessageData.MessageModel messageModel, final int messageType) {
         executor.execute(new Runnable() {

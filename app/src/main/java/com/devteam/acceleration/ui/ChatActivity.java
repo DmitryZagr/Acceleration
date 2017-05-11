@@ -26,6 +26,7 @@ import com.devteam.acceleration.R;
 import com.devteam.acceleration.jabber.db.JabberDbHelper;
 import com.devteam.acceleration.jabber.executors.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
+import com.devteam.acceleration.jabber.executors.JabberDB;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jivesoftware.smack.packet.Message;
@@ -229,6 +230,8 @@ public class ChatActivity extends AppCompatActivity
 //        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
 //        mMessages.addMessageAndUpdateList("Answer:", MessageData.INCOMING_MESSAGE, "http://i.imgur.com/DvpvklR.png");
 
+//        JabberDB.getInstance().saveMessage(jabberDbHelper.getWritableDatabase(), item, MessageData.OUTGOING_MESSAGE);
+
         sendMessage(item.toString());
     }
 
@@ -258,6 +261,7 @@ public class ChatActivity extends AppCompatActivity
                     Toast.makeText(ChatActivity.this, "Server is not available", Toast.LENGTH_LONG).show();
                     return;
                 } else if (message != null) {
+//                    JabberDB.getInstance().saveMessage(jabberDbHelper.getWritableDatabase(), message, MessageData.INCOMING_MESSAGE);
                     mMessages.addMessageAndUpdateList(message.getBody(), MessageData.INCOMING_MESSAGE, null);
                     return;
                 }
