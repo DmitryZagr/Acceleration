@@ -16,14 +16,29 @@ import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.bytestreams.ibb.provider.CloseIQProvider;
+import org.jivesoftware.smackx.bytestreams.ibb.provider.DataPacketProvider;
+import org.jivesoftware.smackx.bytestreams.ibb.provider.OpenIQProvider;
+import org.jivesoftware.smackx.bytestreams.socks5.provider.BytestreamsProvider;
+import org.jivesoftware.smackx.disco.provider.DiscoverInfoProvider;
+import org.jivesoftware.smackx.disco.provider.DiscoverItemsProvider;
+import org.jivesoftware.smackx.filetransfer.FileTransferListener;
+import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
+import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
+import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.si.provider.StreamInitiationProvider;
 import org.jxmpp.jid.EntityJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,6 +65,9 @@ public class JabberChat implements ConnectionListener {
     private ChatMessageListener chatMessageListener;
     private ChatManagerListener chatManagerListener;
 
+    private FileTransferManager fileTransferManager;
+    private FileTransferListener fileTransferListener;
+
     private final Executor executor = Executors.newCachedThreadPool();
 
     private CallbackMessage callback;
@@ -70,6 +88,7 @@ public class JabberChat implements ConnectionListener {
 
     private JabberChat() {
         initializeChatListeners();
+        initializeFileTransferListeners();
     }
 
     public void setJabberModel(JabberModel jabberModel) {
@@ -130,6 +149,9 @@ public class JabberChat implements ConnectionListener {
         builder.setXmppDomain(JidCreate.from(jabberModel.getServiceName()).asDomainBareJid());
         builder.setConnectTimeout(3000);
 
+        XMPPTCPConnection.setUseStreamManagementResumptiodDefault(true);
+        XMPPTCPConnection.setUseStreamManagementDefault(true);
+
         connection = new XMPPTCPConnection(builder.build());
         connection.addConnectionListener(this);
 
@@ -139,8 +161,11 @@ public class JabberChat implements ConnectionListener {
 
         ChatManager.getInstanceFor(connection).addChatListener(chatManagerListener);
 
-        connection.connect();
+        fileTransferManager = FileTransferManager.getInstanceFor(connection);
+        fileTransferManager.addFileTransferListener(fileTransferListener);
+        FileTransferNegotiator.getInstanceFor(connection);
 
+        connection.connect();
     }
 
     private void initializeChatListeners() {
@@ -173,7 +198,47 @@ public class JabberChat implements ConnectionListener {
                 chat.addMessageListener(chatMessageListener);
             }
         };
+    }
 
+    private void initializeFileTransferListeners() {
+        fileTransferListener = new FileTransferListener() {
+            @Override
+            public void fileTransferRequest(FileTransferRequest request) {
+                // Check to see if the request should be accepted
+//                if(shouldAccept(request)) {
+                // Accept it
+                IncomingFileTransfer transfer = request.accept();
+                try {
+                    InputStream input = transfer.recieveFile();
+//                    transfer.recieveFile(new File("shakespeare_complete_works.txt"));
+                } catch (SmackException e) {
+                    e.printStackTrace();
+                } catch (XMPPException.XMPPErrorException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//                } else {
+//                    // Reject it
+//                    request.reject();
+//                }
+            }
+        };
+
+//        ProviderManager.addIQProvider("query","http://jabber.org/protocol/bytestreams", new BytestreamsProvider());
+//        ProviderManager.addIQProvider("query","http://jabber.org/protocol/disco#items", new DiscoverItemsProvider());
+//        ProviderManager.addIQProvider("query","http://jabber.org/protocol/disco#info", new DiscoverInfoProvider());
+
+//        ProviderManager.addIQProvider("si", "http://jabber.org/protocol/si", new StreamInitiationProvider());
+//
+//        ProviderManager.addIQProvider("query", "http://jabber.org/protocol/bytestreams", new BytestreamsProvider());
+////        ProviderManager.addIQProvider("open", "http://jabber.org/protocol/ibb", new IBBProviders.Open());
+////        ProviderManager.addIQProvider("close", "http://jabber.org/protocol/ibb", new IBBProviders.Close());
+////        ProviderManager.addExtensionProvider("data", "http://jabber.org/protocol/ibb", new IBBProviders.Data());
+//        ProviderManager.addIQProvider("open", "http://jabber.org/protocol/ibb", new OpenIQProvider());
+////        ProviderManager.addIQProvider("data", "http://jabber.org/protocol/ibb", new DataPacketProvider());
+//        ProviderManager.addIQProvider("close", "http://jabber.org/protocol/ibb", new CloseIQProvider());
+////        ProviderManager.addExtensionProvider("data", "http://jabber.org/protocol/ibb", new DataPacketProvider());
     }
 
     public void loginToChat() {
@@ -202,6 +267,7 @@ public class JabberChat implements ConnectionListener {
     }
 
     private void notifyUI(final Message message, final Exception e) {
+
         Ui.run(new Runnable() {
             @Override
             public void run() {

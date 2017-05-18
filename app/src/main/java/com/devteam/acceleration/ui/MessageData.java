@@ -18,6 +18,8 @@ public class MessageData {
     public static final List<MessageModel> items = new ArrayList<MessageModel>();
     public static AtomicInteger count = new AtomicInteger(0);
 
+    public static int MAX_COUNT = 100;
+
     private static final String[] messages = new String[]{
             "Hello! Send something to me!", "How are you?", "Now we are going to talk about...Lorem Ipsum. Lorem Ipsum" +
             " - это текст-\"рыба\", \" \n" +
@@ -51,7 +53,7 @@ public class MessageData {
         private final String content;
         private final int type;
         private final String URL;
-        private  Date time;
+        private  Date time ;
 
         public MessageModel(String id, String content, int type, String URL) {
             this.id = id;

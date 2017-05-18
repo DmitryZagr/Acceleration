@@ -44,8 +44,12 @@ public class JabberDB {
         return INSTANCE;
     }
 
+    public  void bindCallback(CallbackDB callbackDB) {
+        this.callbackDB = callbackDB;
+    }
 
-    public void saveMessage(final SQLiteDatabase db, final MessageData.MessageModel messageModel, final int messageType) {
+
+    public void saveMessage(final SQLiteDatabase db, final MessageData.MessageModel messageModel) {
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -54,7 +58,7 @@ public class JabberDB {
                 values.put(JabberEntry.COLUMN_NAME_DATE, messageModel.getTime().toString());
                 values.put(JabberEntry.COLUMN_NAME_TEXT_MESSAGE, messageModel.getContent());
                 values.put(JabberEntry.COLUMN_NAME_PATH_TO_IMAGE, messageModel.getURL());
-                values.put(JabberEntry.COLUMN_NAME_MESSAGE_TYPE, messageType);
+                values.put(JabberEntry.COLUMN_NAME_MESSAGE_TYPE, messageModel.getType());
 
                 long newRowId = db.insert(JabberEntry.TABLE_NAME, null, values);
             }
@@ -88,7 +92,7 @@ public class JabberDB {
             public void run() {
                 String sql = "DELETE FROM " + JabberEntry.TABLE_NAME + " WHERE " + JabberEntry._ID
                         + " IN ( SELECT " + JabberEntry._ID + " FROM " + JabberEntry.TABLE_NAME
-                        + " DESC LIMIT " + count;
+                        + " DESC LIMIT " + count + ")";
                 db.execSQL(sql);
             }
         });

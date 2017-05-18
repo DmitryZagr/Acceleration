@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_jabber"
                     android:inputType="textEmailAddress"
-                    android:text="lolik@192.168.0.11"
+                    android:text="lolik@192.168.43.98"
                     android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>

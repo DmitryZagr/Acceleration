@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.devteam.acceleration.R;
-import com.devteam.acceleration.jabber.db.JabberDbHelper;
 import com.devteam.acceleration.jabber.executors.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
 import com.devteam.acceleration.jabber.executors.JabberDB;
@@ -55,13 +54,13 @@ public class ChatActivity extends AppCompatActivity
     private EditText requestField;
     private Button hideButton;
     private AlertDialog logoutConfirm;
-    private JabberDbHelper jabberDbHelper;
     //TODO : c этим надо чет сделать
     //
-    public static final String bot = "lol@192.168.0.11";
+    public static final String bot = "lol@192.168.43.98";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         System.out.println("On create");
         super.onCreate(savedInstanceState);
 
@@ -153,7 +152,8 @@ public class ChatActivity extends AppCompatActivity
 
         initCallbackChat();
 
-        jabberDbHelper = new JabberDbHelper(this);
+//        jabberDbHelper = new JabberDbHelper(this);
+
     }
 
     private void hideButtonMore() {
@@ -178,7 +178,7 @@ public class ChatActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         JabberChat.getJabberChat().unbindCallback();
-        jabberDbHelper.close();
+//        jabberDbHelper.close();
         super.onDestroy();
     }
 
@@ -229,7 +229,7 @@ public class ChatActivity extends AppCompatActivity
         //TODO appearing messages for test, remove in production
 //        mMessages.addMessageAndUpdateList(item.toString(), MessageData.OUTGOING_MESSAGE, null);
 //        mMessages.addMessageAndUpdateList("Answer:", MessageData.INCOMING_MESSAGE, "http://i.imgur.com/DvpvklR.png");
-
+//
 //        JabberDB.getInstance().saveMessage(jabberDbHelper.getWritableDatabase(), item, MessageData.OUTGOING_MESSAGE);
 
         sendMessage(item.toString());

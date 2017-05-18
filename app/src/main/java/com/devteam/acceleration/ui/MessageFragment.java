@@ -9,8 +9,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.devteam.acceleration.R;
+import com.devteam.acceleration.jabber.db.JabberDbHelper;
+import com.devteam.acceleration.jabber.executors.JabberChat;
+import com.devteam.acceleration.jabber.executors.JabberDB;
+
+import org.jivesoftware.smack.packet.Message;
 
 /**
  * A fragment representing a list of Items.
@@ -29,6 +35,10 @@ public class MessageFragment extends Fragment {
     private MyMessageRecyclerViewAdapter MessagesAdapter;
 
     private RecyclerView recyclerView;
+
+    private JabberDbHelper jabberDbHelper;
+
+    private static boolean isFirstStart = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -51,10 +61,29 @@ public class MessageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(jabberDbHelper == null) {
+            isFirstStart = true;
+        }
+
+        jabberDbHelper = new JabberDbHelper(this.getContext());
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        initCallbackDB();
+
+        if(isFirstStart) {
+            JabberDB.getInstance().getHistory(jabberDbHelper.getReadableDatabase());
+            isFirstStart = false;
+        }
+
     }
+
+    @Override
+    public void onDestroy() {
+        jabberDbHelper.close();
+        super.onDestroy();
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,11 +124,16 @@ public class MessageFragment extends Fragment {
     }
 
     public void addMessageAndUpdateList(String content, int type, String URL) {
-        MessageData.addItem(new MessageData.MessageModel(
+        MessageData.MessageModel message = new MessageData.MessageModel(
                 String.valueOf(MessageData.count),
                 content,
                 type,
-                URL));
+                URL);
+        JabberDB.getInstance().saveMessage(jabberDbHelper.getWritableDatabase(), message);
+        MessageData.addItem(message);
+        if(MessageData.count.intValue() > MessageData.MAX_COUNT) {
+            JabberDB.getInstance().removeOldMessages(jabberDbHelper.getWritableDatabase(), MessageData.count.intValue() - MessageData.MAX_COUNT);
+        }
         MessagesAdapter.notifyDataSetChanged();
         recyclerView.scrollToPosition(MessageData.count.get() - 1);
     }
@@ -118,4 +152,15 @@ public class MessageFragment extends Fragment {
         // TODO: Update argument type and name
         void onMessageFragmentInteraction(MessageData.MessageModel item);
     }
+
+    private void initCallbackDB() {
+        JabberDB.getInstance().bindCallback(new JabberDB.CallbackDB() {
+            @Override
+            public void onCallbackDb(Exception error) {
+                MessagesAdapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(MessageData.count.get() - 1);
+            }
+        });
+    }
+
 }
