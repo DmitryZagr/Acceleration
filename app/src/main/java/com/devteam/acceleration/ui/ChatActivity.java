@@ -56,7 +56,7 @@ public class ChatActivity extends AppCompatActivity
     private AlertDialog logoutConfirm;
     //TODO : c этим надо чет сделать
     //
-    public static final String bot = "lol@192.168.43.98";
+    public static final String bot = "user@192.168.43.98";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

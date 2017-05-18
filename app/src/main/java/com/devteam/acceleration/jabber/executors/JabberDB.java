@@ -78,6 +78,7 @@ public class JabberDB {
                             cursor.getString(cursor.getColumnIndex(JabberEntry.COLUMN_NAME_PATH_TO_IMAGE)),
                             cursor.getString(cursor.getColumnIndex(JabberEntry.COLUMN_NAME_DATE)));
                     MessageData.items.add(messageModel);
+                    MessageData.count.incrementAndGet();
                     notifyUI(null);
                 }
                 cursor.close();
