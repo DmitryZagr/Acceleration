@@ -16,27 +16,18 @@ import org.jivesoftware.smack.chat.ChatManager;
 import org.jivesoftware.smack.chat.ChatManagerListener;
 import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
-import org.jivesoftware.smackx.bytestreams.ibb.provider.CloseIQProvider;
-import org.jivesoftware.smackx.bytestreams.ibb.provider.DataPacketProvider;
-import org.jivesoftware.smackx.bytestreams.ibb.provider.OpenIQProvider;
-import org.jivesoftware.smackx.bytestreams.socks5.provider.BytestreamsProvider;
-import org.jivesoftware.smackx.disco.provider.DiscoverInfoProvider;
-import org.jivesoftware.smackx.disco.provider.DiscoverItemsProvider;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
 import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.iqregister.AccountManager;
-import org.jivesoftware.smackx.si.provider.StreamInitiationProvider;
 import org.jxmpp.jid.EntityJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.jid.parts.Localpart;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -87,8 +78,6 @@ public class JabberChat implements ConnectionListener {
     }
 
     private JabberChat() {
-        initializeChatListeners();
-        initializeFileTransferListeners();
     }
 
     public void setJabberModel(JabberModel jabberModel) {
@@ -105,10 +94,6 @@ public class JabberChat implements ConnectionListener {
 
     public void bindCallback(CallbackMessage callback) {
         this.callback = callback;
-    }
-
-    public void unbindCallback() {
-        this.callback = null;
     }
 
     public void createAccount() {
@@ -154,6 +139,9 @@ public class JabberChat implements ConnectionListener {
 
         connection = new XMPPTCPConnection(builder.build());
         connection.addConnectionListener(this);
+
+        initializeChatListeners();
+        initializeFileTransferListeners();
 
         ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
         ReconnectionManager.setEnabledPerDefault(true);
@@ -313,11 +301,17 @@ public class JabberChat implements ConnectionListener {
     public void disconnect() {
         Log.d(TAG, "Disconnecting from server " + jabberModel.getServiceName());
 
-        if (connection != null && connection.isConnected()) {
-            connection.disconnect();
-        }
-        chatMessageListener = null;
-        connection = null;
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (connection != null && connection.isConnected()) {
+                    connection.disconnect();
+                }
+                chatManagerListener = null;
+                chatMessageListener = null;
+                connection = null;
+            }
+        });
     }
 
     @Override

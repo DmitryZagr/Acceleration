@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.devteam.acceleration.R;
+import com.devteam.acceleration.jabber.db.JabberDbHelper;
 import com.devteam.acceleration.jabber.executors.JabberChat;
 import com.devteam.acceleration.jabber.JabberParams;
 import com.devteam.acceleration.jabber.executors.JabberDB;
@@ -54,9 +55,10 @@ public class ChatActivity extends AppCompatActivity
     private EditText requestField;
     private Button hideButton;
     private AlertDialog logoutConfirm;
+    private JabberDbHelper jabberDbHelper;
     //TODO : c этим надо чет сделать
     //
-    public static final String bot = "user@192.168.43.98";
+    public static final String bot = "user@192.168.1.65";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +139,9 @@ public class ChatActivity extends AppCompatActivity
                 .setTitle(R.string.dialog_title)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        jabberDbHelper = new JabberDbHelper(ChatActivity.this);
+                        JabberDB.getInstance().removeAllMessages(jabberDbHelper.getWritableDatabase());
+                        MessageData.clearData();
                         //TODO logout routine (comment intent for test!)
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ChatActivity.this);
                         prefs.edit().putBoolean(JabberParams.LOGGED_IN, false).apply();
@@ -177,8 +182,11 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        JabberChat.getJabberChat().unbindCallback();
-//        jabberDbHelper.close();
+//        JabberChat.getJabberChat().unbindCallback();
+        if(jabberDbHelper != null) {
+            jabberDbHelper.close();
+            jabberDbHelper = null;
+        }
         super.onDestroy();
     }
 

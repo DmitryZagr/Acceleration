@@ -35,6 +35,11 @@ public class MessageData {
 //        }
     }
 
+    public static void clearData() {
+        items.clear();
+        count.getAndSet(0);
+    }
+
     public static void addItem(MessageModel item) {
         items.add(item);
         count.incrementAndGet();

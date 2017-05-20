@@ -62,6 +62,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        initCallback();
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
         if (prefs.getBoolean(JabberParams.LOGGED_IN, false)) {
             JabberModel jabberModel = new JabberModel();
@@ -72,8 +74,6 @@ public class LoginActivity extends AppCompatActivity {
             showChatActivity();
             return;
         }
-
-        initCallback();
 
         setContentView(R.layout.activity_login);
         // Set up the login form.
@@ -162,6 +162,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showChatActivity() {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(MessageFragment.isFirstStart, true).apply();
+
         final Intent sw = new Intent(LoginActivity.this, ChatActivity.class);
         sw.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(sw);
@@ -176,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        JabberChat.getJabberChat().unbindCallback();
+//        JabberChat.getJabberChat().unbindCallback();
         super.onDestroy();
     }
 
@@ -185,6 +189,7 @@ public class LoginActivity extends AppCompatActivity {
         showProgress(false);
         if (JabberChat.connectionState.equals(JabberChat.ConnectionState.AUTHENTICATED)) {
             Intent intent = new Intent(this, ChatActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
     }

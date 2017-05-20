@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 public class JabberDB {
 
     private static JabberDB INSTANCE = new JabberDB();
+    public static final int DELTA = 10;
 
     private CallbackDB callbackDB;
     private final Executor executor = Executors.newCachedThreadPool();
@@ -94,6 +95,16 @@ public class JabberDB {
                 String sql = "DELETE FROM " + JabberEntry.TABLE_NAME + " WHERE " + JabberEntry._ID
                         + " IN ( SELECT " + JabberEntry._ID + " FROM " + JabberEntry.TABLE_NAME
                         + " DESC LIMIT " + count + ")";
+                db.execSQL(sql);
+            }
+        });
+    }
+
+    public void removeAllMessages(final SQLiteDatabase db) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                String sql = "DELETE FROM " + JabberEntry.TABLE_NAME;
                 db.execSQL(sql);
             }
         });

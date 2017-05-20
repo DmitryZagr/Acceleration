@@ -1,7 +1,9 @@
 package com.devteam.acceleration.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,7 +40,7 @@ public class MessageFragment extends Fragment {
 
     private JabberDbHelper jabberDbHelper;
 
-    private static boolean isFirstStart = false;
+    public static String isFirstStart = "isFirstStart";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -61,9 +63,9 @@ public class MessageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(jabberDbHelper == null) {
-            isFirstStart = true;
-        }
+//        if(jabberDbHelper == null) {
+//            isFirstStart = true;
+//        }
 
         jabberDbHelper = new JabberDbHelper(this.getContext());
         if (getArguments() != null) {
@@ -71,9 +73,13 @@ public class MessageFragment extends Fragment {
         }
         initCallbackDB();
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        boolean isFirstStart = prefs.getBoolean(this.isFirstStart, true);
+
+
         if(isFirstStart) {
             JabberDB.getInstance().getHistory(jabberDbHelper.getReadableDatabase());
-            isFirstStart = false;
+            prefs.edit().putBoolean(this.isFirstStart, false).apply();
         }
 
     }
@@ -131,8 +137,8 @@ public class MessageFragment extends Fragment {
                 URL);
         JabberDB.getInstance().saveMessage(jabberDbHelper.getWritableDatabase(), message);
         MessageData.addItem(message);
-        if(MessageData.count.intValue() > MessageData.MAX_COUNT) {
-            JabberDB.getInstance().removeOldMessages(jabberDbHelper.getWritableDatabase(), MessageData.count.intValue() - MessageData.MAX_COUNT);
+        if((MessageData.count.intValue() - MessageData.MAX_COUNT) == JabberDB.DELTA) {
+            JabberDB.getInstance().removeOldMessages(jabberDbHelper.getWritableDatabase(), JabberDB.DELTA);
         }
         MessagesAdapter.notifyDataSetChanged();
         recyclerView.scrollToPosition(MessageData.count.get() - 1);
